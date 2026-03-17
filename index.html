@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#7a1a0e">
+<title>コピペ管理ノート</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red:    #9b2212;
+  --red2:   #c0392b;
+  --red3:   #e74c3c;
+  --redbg:  #2a0a07;
+  --redbg2: #3d1008;
+  --redbg3: #521610;
+  --cream:  #fdf6ee;
+  --paper:  #faf0e4;
+  --border: #c8856a;
+  --border2:#e8b49a;
+  --text:   #1a0a06;
+  --text2:  #5a2e1e;
+  --gold:   #b8862a;
+  --sh:     rgba(90,20,10,0.18);
+  --copy:   #1a6b9a;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  background:var(--redbg);
+  color:var(--cream);
+  display:flex;flex-direction:column;height:100dvh;
+}
+
+/* ── ヘッダー ── */
+.hd{
+  background:var(--redbg);
+  border-bottom:1px solid var(--redbg3);
+  padding:12px 16px 10px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+  position:relative;
+  z-index:50;
+}
+.hd-left{display:flex;align-items:center;gap:10px;}
+.hd-bar{width:3px;height:22px;background:var(--red2);border-radius:2px;flex-shrink:0;}
+.hd-title{
+  font-family:"Shippori Mincho",serif;
+  font-size:1rem;letter-spacing:0.25em;font-weight:600;
+  color:var(--cream);
+  cursor:pointer;border-bottom:1px dashed rgba(200,133,106,0.3);
+  transition:border-color 0.15s;
+}
+.hd-title:hover{border-bottom-color:rgba(200,133,106,0.7);}
+.hd-right{display:flex;gap:8px;}
+.hd-btn{
+  background:none;border:1px solid rgba(200,133,106,0.35);
+  border-radius:6px;padding:6px 10px;
+  color:var(--border2);font-size:0.72rem;cursor:pointer;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  transition:all 0.15s;white-space:nowrap;
+}
+.hd-btn:hover{background:var(--redbg3);border-color:var(--border);color:var(--cream);}
+.hd-btn.active{background:var(--red);border-color:var(--red2);color:white;}
+
+/* ── タブバー ── */
+.tabbar{
+  background:var(--redbg2);
+  border-bottom:1px solid var(--redbg3);
+  display:flex;align-items:stretch;
+  overflow-x:auto;scrollbar-width:none;
+  flex-shrink:0;min-height:42px;
+}
+.tabbar::-webkit-scrollbar{display:none;}
+.tab-item{
+  display:flex;align-items:center;gap:6px;
+  padding:0 16px;
+  color:rgba(253,246,238,0.45);
+  font-size:0.76rem;cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all 0.15s;
+  background:none;border-top:none;border-left:none;border-right:none;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  position:relative;flex-shrink:0;
+}
+.tab-item.on{color:var(--cream);border-bottom-color:var(--red2);}
+.tab-item:hover{color:rgba(253,246,238,0.8);}
+.tab-all{border-right:1px solid var(--redbg3);}
+.tab-add{
+  padding:0 14px;color:rgba(200,133,106,0.6);
+  font-size:1.1rem;cursor:pointer;background:none;border:none;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  transition:color 0.15s;flex-shrink:0;
+}
+.tab-add:hover{color:var(--red2);}
+.tab-cnt{
+  font-size:0.62rem;background:rgba(155,34,18,0.5);
+  padding:1px 5px;border-radius:8px;color:rgba(253,246,238,0.7);
+}
+.tab-item.on .tab-cnt{background:var(--red);color:white;}
+
+/* ── 検索バー ── */
+.searchbar{
+  padding:10px 14px;background:var(--redbg2);
+  border-bottom:1px solid var(--redbg3);
+  flex-shrink:0;
+}
+.search-inner{
+  display:flex;gap:8px;align-items:center;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(200,133,106,0.25);
+  border-radius:8px;padding:7px 12px;
+}
+.search-icon{color:rgba(200,133,106,0.5);font-size:0.85rem;flex-shrink:0;}
+.search-inp{
+  flex:1;background:none;border:none;outline:none;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:0.84rem;color:var(--cream);
+}
+.search-inp::placeholder{color:rgba(200,133,106,0.4);}
+.search-clear{
+  background:none;border:none;color:rgba(200,133,106,0.5);
+  cursor:pointer;font-size:0.9rem;padding:0 2px;
+  transition:color 0.15s;flex-shrink:0;
+}
+.search-clear:hover{color:var(--red2);}
+
+/* ── リスト ── */
+.list-wrap{flex:1;overflow-y:auto;padding:12px 14px 80px;}
+.list-wrap::-webkit-scrollbar{width:3px;}
+.list-wrap::-webkit-scrollbar-track{background:transparent;}
+.list-wrap::-webkit-scrollbar-thumb{background:var(--redbg3);border-radius:2px;}
+
+.item-card{
+  background:rgba(253,246,238,0.06);
+  border:1px solid rgba(200,133,106,0.2);
+  border-left:3px solid var(--red);
+  border-radius:8px;padding:14px;margin-bottom:9px;
+  cursor:pointer;transition:all 0.15s;
+  position:relative;
+}
+.item-card:hover{background:rgba(253,246,238,0.1);border-color:rgba(200,133,106,0.4);}
+.item-card:active{transform:scale(0.99);}
+.item-title{
+  font-family:"Shippori Mincho",serif;
+  font-size:0.95rem;font-weight:600;
+  color:var(--cream);margin-bottom:5px;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
+}
+.item-body{
+  font-size:0.78rem;color:rgba(253,246,238,0.55);
+  line-height:1.7;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.item-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:9px;gap:8px;
+}
+.item-meta{font-size:0.64rem;color:rgba(200,133,106,0.6);}
+.item-tab-badge{
+  font-size:0.6rem;padding:2px 7px;border-radius:8px;
+  background:rgba(155,34,18,0.35);color:rgba(253,246,238,0.6);
+  border:1px solid rgba(155,34,18,0.5);
+}
+.btn-copy-card{
+  padding:4px 10px;border-radius:5px;
+  border:1px solid rgba(26,107,154,0.5);
+  background:rgba(26,107,154,0.1);
+  color:rgba(100,180,230,0.9);
+  font-size:0.67rem;cursor:pointer;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  transition:all 0.15s;white-space:nowrap;flex-shrink:0;
+}
+.btn-copy-card:hover{background:rgba(26,107,154,0.3);color:white;}
+
+.empty{text-align:center;padding:50px 20px;color:rgba(200,133,106,0.5);}
+.empty-icon{font-size:2.5rem;margin-bottom:12px;}
+.empty-txt{font-size:0.82rem;line-height:2;}
+
+/* ── FAB（新規追加） ── */
+.fab{
+  position:fixed;bottom:24px;right:20px;
+  width:52px;height:52px;border-radius:50%;
+  background:var(--red);border:none;
+  color:white;font-size:1.5rem;
+  cursor:pointer;z-index:80;
+  box-shadow:0 4px 20px rgba(155,34,18,0.6);
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.fab:hover{background:var(--red2);transform:scale(1.08);}
+.fab:active{transform:scale(0.95);}
+
+/* ── モーダル共通 ── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(10,3,1,0.85);z-index:200;
+  overflow-y:auto;padding:16px;
+  align-items:flex-start;justify-content:center;
+}
+.overlay.on{display:flex;}
+.modal{
+  background:var(--redbg2);
+  border:1px solid var(--redbg3);
+  border-radius:12px;
+  padding:22px;max-width:640px;width:100%;
+  margin:auto;position:relative;
+}
+.modal-close{
+  position:absolute;top:14px;right:16px;
+  background:none;border:none;
+  color:rgba(200,133,106,0.6);font-size:1.1rem;
+  cursor:pointer;padding:4px 6px;transition:color 0.15s;
+}
+.modal-close:hover{color:var(--red2);}
+.modal-title{
+  font-family:"Shippori Mincho",serif;
+  font-size:1.15rem;color:var(--cream);
+  margin-bottom:18px;padding-right:30px;
+}
+.modal-title-sm{
+  font-family:"Shippori Mincho",serif;
+  font-size:0.95rem;color:var(--cream);
+  margin-bottom:14px;padding-bottom:10px;
+  border-bottom:1px solid var(--redbg3);
+  display:flex;align-items:center;gap:8px;
+}
+.modal-title-sm::before{
+  content:"";display:block;width:3px;height:14px;
+  background:var(--red2);border-radius:2px;
+}
+
+/* ── フォーム ── */
+.fg{display:grid;gap:14px;}
+.lbl{font-size:0.68rem;letter-spacing:0.18em;color:var(--gold);margin-bottom:5px;display:block;}
+.inp,.ta{
+  width:100%;border:1.5px solid rgba(200,133,106,0.3);
+  border-radius:7px;padding:9px 12px;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:0.88rem;color:var(--cream);
+  background:rgba(255,255,255,0.05);
+  transition:border-color 0.2s;
+}
+.inp:focus,.ta:focus{outline:none;border-color:var(--red2);}
+.inp::placeholder,.ta::placeholder{color:rgba(200,133,106,0.35);}
+.ta{resize:vertical;line-height:1.9;min-height:160px;}
+.wc{font-size:0.68rem;color:var(--gold);text-align:right;margin-top:4px;}
+.sel{
+  width:100%;border:1.5px solid rgba(200,133,106,0.3);
+  border-radius:7px;padding:9px 12px;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:0.88rem;color:var(--cream);
+  background:var(--redbg2);cursor:pointer;
+}
+.sel:focus{outline:none;border-color:var(--red2);}
+.sel option{background:var(--redbg2);}
+
+/* ── ボタン ── */
+.btn-row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px;}
+.btn{
+  padding:9px 20px;border-radius:7px;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:0.82rem;cursor:pointer;
+  transition:all 0.15s;border:none;font-weight:500;
+}
+.btn-p{background:var(--red);color:white;}
+.btn-p:hover{background:var(--red2);}
+.btn-p:disabled{opacity:0.5;}
+.btn-s{background:transparent;color:var(--border2);border:1.5px solid rgba(200,133,106,0.35);}
+.btn-s:hover{border-color:var(--red2);color:var(--cream);}
+.btn-danger{background:transparent;color:#e74c3c;border:1.5px solid rgba(231,76,60,0.4);}
+.btn-danger:hover{background:rgba(231,76,60,0.15);}
+.btn-sm{padding:6px 13px;font-size:0.74rem;}
+
+/* ── 詳細モーダル ── */
+.detail-title{
+  font-family:"Shippori Mincho",serif;
+  font-size:1.3rem;color:var(--cream);
+  margin-bottom:14px;line-height:1.5;
+}
+.detail-body{
+  font-size:0.88rem;line-height:1.95;
+  color:rgba(253,246,238,0.8);
+  white-space:pre-wrap;
+  background:rgba(255,255,255,0.04);
+  border-radius:7px;padding:14px;
+  border:1px solid rgba(200,133,106,0.15);
+  margin-bottom:14px;
+  max-height:45vh;overflow-y:auto;
+}
+.detail-meta{font-size:0.66rem;color:rgba(200,133,106,0.5);margin-bottom:14px;}
+
+/* ── タブ管理モーダル ── */
+.tab-manage-list{margin-bottom:14px;}
+.tab-manage-item{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(200,133,106,0.12);
+}
+.tab-manage-name{flex:1;font-size:0.86rem;color:var(--cream);}
+.tab-manage-cnt{font-size:0.7rem;color:rgba(200,133,106,0.5);}
+.tab-edit-btn,.tab-del-btn{
+  background:none;border:none;cursor:pointer;
+  padding:4px 6px;border-radius:4px;font-size:0.78rem;
+  transition:all 0.15s;
+}
+.tab-edit-btn{color:rgba(200,133,106,0.6);}
+.tab-edit-btn:hover{color:var(--cream);background:rgba(255,255,255,0.08);}
+.tab-del-btn{color:rgba(231,76,60,0.5);}
+.tab-del-btn:hover{color:#e74c3c;background:rgba(231,76,60,0.1);}
+
+/* ── データ管理モーダル ── */
+.data-section{margin-bottom:16px;}
+.data-box{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(200,133,106,0.18);
+  border-radius:8px;padding:14px;margin-bottom:10px;
+}
+.data-box-title{
+  font-family:"Shippori Mincho",serif;
+  font-size:0.88rem;color:var(--cream);margin-bottom:6px;
+}
+.data-box-desc{font-size:0.75rem;color:rgba(200,133,106,0.65);line-height:1.8;margin-bottom:10px;}
+.imp-drop{
+  border:2px dashed rgba(200,133,106,0.3);
+  border-radius:8px;padding:18px;text-align:center;
+  cursor:pointer;transition:all 0.2s;
+}
+.imp-drop:hover,.imp-drop.drag{border-color:var(--red2);background:rgba(155,34,18,0.08);}
+.imp-drop-txt{font-size:0.8rem;color:rgba(200,133,106,0.55);line-height:2;}
+#imp-file{display:none;}
+.imp-status{font-size:0.76rem;color:#5dbb6f;margin-top:8px;min-height:1.4em;}
+
+/* ── トースト ── */
+.toast{
+  position:fixed;bottom:90px;left:50%;
+  transform:translateX(-50%) translateY(60px);
+  background:var(--redbg3);color:var(--cream);
+  padding:10px 20px;border-radius:20px;
+  font-size:0.8rem;z-index:999;
+  transition:transform 0.28s;
+  border-left:3px solid var(--red2);
+  white-space:nowrap;pointer-events:none;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+.toast.on{transform:translateX(-50%) translateY(0);}
+
+/* ── ソート ── */
+.sort-row{
+  display:flex;gap:5px;padding:8px 14px;
+  background:var(--redbg2);border-bottom:1px solid var(--redbg3);
+  overflow-x:auto;scrollbar-width:none;flex-shrink:0;
+}
+.sort-row::-webkit-scrollbar{display:none;}
+.sort-btn{
+  padding:4px 10px;border-radius:4px;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  font-size:0.68rem;cursor:pointer;
+  border:1px solid rgba(200,133,106,0.25);
+  background:rgba(255,255,255,0.04);
+  color:rgba(200,133,106,0.7);
+  transition:all 0.15s;white-space:nowrap;flex-shrink:0;
+}
+.sort-btn:hover{border-color:var(--red2);color:var(--cream);}
+.sort-btn.on{background:var(--red);border-color:var(--red);color:white;}
+
+/* ── カウント ── */
+.count-bar{
+  padding:6px 14px;
+  font-size:0.68rem;color:rgba(200,133,106,0.5);
+  background:var(--redbg2);border-bottom:1px solid var(--redbg3);
+  flex-shrink:0;
+}
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<div class="hd">
+  <div class="hd-left">
+    <div class="hd-bar"></div>
+    <div class="hd-title" id="hd-title" onclick="editAppTitle()" title="タップして編集"></div>
+  </div>
+  <div class="hd-right">
+    <button class="hd-btn" onclick="openTabManage()">⚙ タブ管理</button>
+    <button class="hd-btn" onclick="openData()">💾 データ管理</button>
+  </div>
+</div>
+
+<!-- タブバー -->
+<div class="tabbar" id="tabbar"></div>
+
+<!-- 検索バー -->
+<div class="searchbar">
+  <div class="search-inner">
+    <span class="search-icon">🔍</span>
+    <input class="search-inp" id="search-inp" type="text" placeholder="検索…" oninput="onSearch()">
+    <button class="search-clear" onclick="clearSearch()">✕</button>
+  </div>
+</div>
+
+<!-- ソートバー -->
+<div class="sort-row" id="sort-row">
+  <button class="sort-btn on" onclick="setSort('updated','desc',this)">更新↓</button>
+  <button class="sort-btn" onclick="setSort('updated','asc',this)">更新↑</button>
+  <button class="sort-btn" onclick="setSort('created','desc',this)">作成↓</button>
+  <button class="sort-btn" onclick="setSort('created','asc',this)">作成↑</button>
+  <button class="sort-btn" onclick="setSort('title','asc',this)">タイトル↑</button>
+  <button class="sort-btn" onclick="setSort('title','desc',this)">タイトル↓</button>
+</div>
+
+<!-- カウント -->
+<div class="count-bar" id="count-bar"></div>
+
+<!-- リスト -->
+<div class="list-wrap" id="list-wrap"></div>
+
+<!-- FAB -->
+<button class="fab" onclick="openEdit(null)" title="新規追加">＋</button>
+
+<!-- ── モーダル：詳細 ── -->
+<div class="overlay" id="mo-detail">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('mo-detail')">✕</button>
+    <div class="modal-title" id="detail-title"></div>
+    <div class="detail-meta" id="detail-meta"></div>
+    <div class="detail-body" id="detail-body"></div>
+    <div class="btn-row">
+      <button class="btn btn-s btn-sm" onclick="cpDetail()">📋 全文コピー</button>
+      <button class="btn btn-s btn-sm" onclick="editFromDetail()">✏ 編集</button>
+      <button class="btn btn-p btn-sm" onclick="closeModal('mo-detail')">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── モーダル：編集 ── -->
+<div class="overlay" id="mo-edit">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('mo-edit')">✕</button>
+    <div class="modal-title-sm" id="edit-modal-title">新規アイテム</div>
+    <div class="fg">
+      <div>
+        <label class="lbl">タイトル</label>
+        <input class="inp" id="e-title" type="text" placeholder="タイトルを入力">
+      </div>
+      <div>
+        <label class="lbl">タブ</label>
+        <select class="sel" id="e-tab"></select>
+      </div>
+      <div>
+        <label class="lbl">本文</label>
+        <textarea class="ta" id="e-body" placeholder="本文を入力" oninput="updateWc()"></textarea>
+        <div class="wc" id="wc"></div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:14px;">
+      <button class="btn btn-danger btn-sm" id="del-btn" style="display:none;margin-right:auto;" onclick="deleteItem()">削除</button>
+      <button class="btn btn-s btn-sm" onclick="closeModal('mo-edit')">キャンセル</button>
+      <button class="btn btn-p btn-sm" id="save-btn" onclick="saveItem()">💾 保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── モーダル：タブ管理 ── -->
+<div class="overlay" id="mo-tab">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('mo-tab')">✕</button>
+    <div class="modal-title-sm">タブ管理</div>
+    <div class="tab-manage-list" id="tab-manage-list"></div>
+    <div class="fg" style="margin-bottom:12px;">
+      <div>
+        <label class="lbl">新しいタブを追加</label>
+        <div style="display:flex;gap:8px;">
+          <input class="inp" id="new-tab-name" type="text" placeholder="タブ名" style="flex:1;">
+          <button class="btn btn-p btn-sm" onclick="addTab()">追加</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── モーダル：タブ名編集 ── -->
+<div class="overlay" id="mo-tab-edit">
+  <div class="modal" style="max-width:380px;">
+    <button class="modal-close" onclick="closeModal('mo-tab-edit')">✕</button>
+    <div class="modal-title-sm">タブ名を変更</div>
+    <div class="fg">
+      <div>
+        <label class="lbl">タブ名</label>
+        <input class="inp" id="tab-edit-name" type="text">
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:12px;">
+      <button class="btn btn-s btn-sm" onclick="closeModal('mo-tab-edit')">キャンセル</button>
+      <button class="btn btn-p btn-sm" onclick="saveTabName()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── モーダル：データ管理 ── -->
+<div class="overlay" id="mo-data">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('mo-data')">✕</button>
+    <div class="modal-title-sm">データ管理</div>
+
+    <div class="data-box">
+      <div class="data-box-title">📥 エクスポート</div>
+      <div class="data-box-desc">全データをファイルとしてダウンロードします。</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-p btn-sm" onclick="exportJSON()">📦 JSON</button>
+        <button class="btn btn-s btn-sm" onclick="exportCSV()">📋 CSV</button>
+      </div>
+    </div>
+
+    <div class="data-box">
+      <div class="data-box-title">📤 インポート</div>
+      <div class="data-box-desc">
+        CSV または JSON を読み込みます。<br>
+        ・同じタイトルのアイテムは<strong style="color:var(--cream);">更新日が新しい方</strong>を優先します。<br>
+        ・新しいアイテムは追加されます。<br>
+        ・既存データは消えません。
+      </div>
+      <div class="imp-drop" id="imp-drop" onclick="document.getElementById('imp-file').click()" ondragover="impDrag(event,true)" ondragleave="impDrag(event,false)" ondrop="impDrop(event)">
+        <div class="imp-drop-txt">📁 クリックまたはドラッグ＆ドロップ<br><small style="opacity:0.7;">CSV (.csv) / JSON (.json)</small></div>
+      </div>
+      <input type="file" id="imp-file" accept=".csv,.json" onchange="impFile(this)">
+      <div class="imp-status" id="imp-status"></div>
+    </div>
+
+    <div class="data-box">
+      <div class="data-box-title">🗑 データ初期化</div>
+      <div class="data-box-desc">全データを削除します。実行前に必ずエクスポートしてください。</div>
+      <button class="btn btn-danger btn-sm" onclick="clearAll()">全データを削除</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+//  State
+// ============================================================
+var STORE_KEY = 'copipe_v1';
+var state = {
+  appTitle: 'コピペ管理ノート',
+  tabs: [],   // [{id, name, order}]
+  items: []   // [{id, title, body, tabId, created, updated}]
+};
+var curTab = 'all';
+var curSort = {key:'updated', dir:'desc'};
+var curKw = '';
+var editingId = null;
+var editingTabId = null; // タブ名編集用
+
+// ============================================================
+//  Storage
+// ============================================================
+function load() {
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      var d = JSON.parse(raw);
+      state.appTitle = d.appTitle || 'コピペ管理ノート';
+      state.tabs  = d.tabs  || [];
+      state.items = d.items || [];
+    }
+  } catch(e) {}
+}
+
+function save() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+
+// ============================================================
+//  Util
+// ============================================================
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+function nowStr() {
+  var d = new Date();
+  return d.getFullYear() + '-'
+    + pad(d.getMonth()+1) + '-' + pad(d.getDate())
+    + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+function pad(n){ return n < 10 ? '0'+n : String(n); }
+
+function toast(m) {
+  var t = document.getElementById('toast');
+  t.textContent = m;
+  t.classList.add('on');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.classList.remove('on'); }, 2400);
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('on');
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('on');
+}
+
+// overlay click で閉じる
+document.querySelectorAll('.overlay').forEach(function(el) {
+  el.addEventListener('click', function(e) {
+    if (e.target === el) el.classList.remove('on');
+  });
+});
+
+// ============================================================
+//  タブ
+// ============================================================
+function renderTabs() {
+  var bar = document.getElementById('tabbar');
+  var allCnt = state.items.length;
+  var allBtn = '<button class="tab-item tab-all' + (curTab==='all'?' on':'') + '" onclick="setCurTab(\'all\')">すべて<span class="tab-cnt">' + allCnt + '</span></button>';
+  var tabs = state.tabs.slice().sort(function(a,b){return (a.order||0)-(b.order||0);}).map(function(t){
+    var cnt = state.items.filter(function(i){return i.tabId===t.id;}).length;
+    return '<button class="tab-item' + (curTab===t.id?' on':'') + '" onclick="setCurTab(\'' + t.id + '\')">'
+      + esc(t.name) + '<span class="tab-cnt">' + cnt + '</span></button>';
+  }).join('');
+  var addBtn = '<button class="tab-add" onclick="openTabManage()" title="タブ管理">＋</button>';
+  bar.innerHTML = allBtn + tabs + addBtn;
+}
+
+function setCurTab(id) {
+  curTab = id;
+  renderTabs();
+  renderList();
+}
+
+// ============================================================
+//  リスト
+// ============================================================
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function getTabName(tabId) {
+  var t = state.tabs.find(function(x){return x.id===tabId;});
+  return t ? t.name : '';
+}
+
+function filteredItems() {
+  return state.items.filter(function(item) {
+    var tabOk = curTab === 'all' || item.tabId === curTab;
+    var kwOk  = !curKw || (item.title+' '+item.body).toLowerCase().indexOf(curKw) >= 0;
+    return tabOk && kwOk;
+  });
+}
+
+function renderList() {
+  var items = filteredItems().slice().sort(function(a,b){
+    var va = a[curSort.key] || '', vb = b[curSort.key] || '';
+    return curSort.dir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+  });
+
+  var total = state.items.length;
+  var shown = items.length;
+  var bar = document.getElementById('count-bar');
+  bar.textContent = (curKw || curTab !== 'all')
+    ? '絞り込み ' + shown + ' / ' + total + ' 件'
+    : '全 ' + total + ' 件';
+
+  var wrap = document.getElementById('list-wrap');
+  if (!items.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-txt">'
+      + (curKw ? '「'+esc(curKw)+'」は見つかりませんでした' : 'アイテムがありません<br>＋ボタンで追加してください') + '</div></div>';
+    return;
+  }
+
+  wrap.innerHTML = items.map(function(item) {
+    var tabName = getTabName(item.tabId);
+    var bodyPrev = (item.body||'').slice(0,80) + ((item.body||'').length>80?'…':'');
+    return '<div class="item-card" onclick="openDetail(\'' + item.id + '\')">'
+      + '<div class="item-title">' + esc(item.title) + '</div>'
+      + (bodyPrev ? '<div class="item-body">' + esc(bodyPrev) + '</div>' : '')
+      + '<div class="item-foot">'
+      + '<div style="display:flex;gap:6px;align-items:center;">'
+      + (tabName && curTab==='all' ? '<span class="item-tab-badge">' + esc(tabName) + '</span>' : '')
+      + '<span class="item-meta">' + (item.updated||item.created||'') + '</span>'
+      + '</div>'
+      + '<button class="btn-copy-card" onclick="event.stopPropagation();cpItem(\'' + item.id + '\')">📋 コピー</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+// ============================================================
+//  詳細
+// ============================================================
+var detailId = null;
+function openDetail(id) {
+  var item = state.items.find(function(x){return x.id===id;});
+  if (!item) return;
+  detailId = id;
+  document.getElementById('detail-title').textContent = item.title || '';
+  document.getElementById('detail-meta').textContent =
+    (getTabName(item.tabId) ? '【'+getTabName(item.tabId)+'】　' : '') +
+    '更新：' + (item.updated||item.created||'');
+  document.getElementById('detail-body').textContent = item.body || '（本文なし）';
+  openModal('mo-detail');
+}
+
+function cpDetail() {
+  var item = state.items.find(function(x){return x.id===detailId;});
+  if (!item) return;
+  var txt = item.title + (item.body ? '\n\n' + item.body : '');
+  navigator.clipboard.writeText(txt)
+    .then(function(){ toast('✓ コピーしました'); })
+    .catch(function(){ toast('コピーできませんでした'); });
+}
+
+function editFromDetail() {
+  closeModal('mo-detail');
+  openEdit(detailId);
+}
+
+function cpItem(id) {
+  var item = state.items.find(function(x){return x.id===id;});
+  if (!item) return;
+  var txt = item.title + (item.body ? '\n\n' + item.body : '');
+  navigator.clipboard.writeText(txt)
+    .then(function(){ toast('✓ コピーしました：' + item.title); })
+    .catch(function(){ toast('コピーできませんでした'); });
+}
+
+// ============================================================
+//  編集
+// ============================================================
+function openEdit(id) {
+  editingId = id;
+  var item = id ? state.items.find(function(x){return x.id===id;}) : null;
+
+  document.getElementById('edit-modal-title').textContent = item ? 'アイテムを編集' : '新規アイテム';
+  document.getElementById('e-title').value = item ? (item.title||'') : '';
+  document.getElementById('e-body').value  = item ? (item.body||'')  : '';
+  document.getElementById('del-btn').style.display = item ? '' : 'none';
+
+  // タブ選択肢
+  var sel = document.getElementById('e-tab');
+  sel.innerHTML = '<option value="">（未分類）</option>'
+    + state.tabs.map(function(t){
+        return '<option value="' + t.id + '"' + (item && item.tabId===t.id?' selected':'') + '>' + esc(t.name) + '</option>';
+      }).join('');
+
+  updateWc();
+  openModal('mo-edit');
+  setTimeout(function(){ document.getElementById('e-title').focus(); }, 100);
+}
+
+function updateWc() {
+  var v = document.getElementById('e-body').value;
+  document.getElementById('wc').textContent = v.length.toLocaleString() + '字';
+}
+
+function saveItem() {
+  var title = document.getElementById('e-title').value.trim();
+  if (!title) { toast('タイトルを入力してください'); return; }
+  var body  = document.getElementById('e-body').value;
+  var tabId = document.getElementById('e-tab').value;
+  var now   = nowStr();
+
+  if (editingId) {
+    var idx = state.items.findIndex(function(x){return x.id===editingId;});
+    if (idx >= 0) {
+      state.items[idx].title   = title;
+      state.items[idx].body    = body;
+      state.items[idx].tabId   = tabId;
+      state.items[idx].updated = now;
+    }
+  } else {
+    state.items.push({ id:uid(), title:title, body:body, tabId:tabId, created:now, updated:now });
+  }
+
+  save();
+  closeModal('mo-edit');
+  renderTabs();
+  renderList();
+  toast('✓ 保存しました');
+}
+
+function deleteItem() {
+  if (!editingId) return;
+  if (!confirm('このアイテムを削除しますか？')) return;
+  state.items = state.items.filter(function(x){return x.id!==editingId;});
+  save();
+  closeModal('mo-edit');
+  renderTabs();
+  renderList();
+  toast('削除しました');
+}
+
+// ============================================================
+//  タブ管理
+// ============================================================
+function openTabManage() {
+  renderTabManage();
+  openModal('mo-tab');
+}
+
+function renderTabManage() {
+  var list = document.getElementById('tab-manage-list');
+  if (!state.tabs.length) {
+    list.innerHTML = '<div style="font-size:0.78rem;color:rgba(200,133,106,0.5);padding:10px 0;">タブがありません</div>';
+    return;
+  }
+  list.innerHTML = state.tabs.slice().sort(function(a,b){return (a.order||0)-(b.order||0);}).map(function(t) {
+    var cnt = state.items.filter(function(i){return i.tabId===t.id;}).length;
+    return '<div class="tab-manage-item">'
+      + '<span class="tab-manage-name">' + esc(t.name) + '</span>'
+      + '<span class="tab-manage-cnt">' + cnt + '件</span>'
+      + '<button class="tab-edit-btn" onclick="openTabEdit(\'' + t.id + '\')">✏</button>'
+      + '<button class="tab-del-btn" onclick="deleteTab(\'' + t.id + '\')">🗑</button>'
+      + '</div>';
+  }).join('');
+}
+
+function addTab() {
+  var name = document.getElementById('new-tab-name').value.trim();
+  if (!name) { toast('タブ名を入力してください'); return; }
+  if (state.tabs.find(function(t){return t.name===name;})) { toast('同じ名前のタブがあります'); return; }
+  var maxOrder = state.tabs.reduce(function(m,t){return Math.max(m,t.order||0);}, 0);
+  state.tabs.push({ id:uid(), name:name, order:maxOrder+1 });
+  document.getElementById('new-tab-name').value = '';
+  save();
+  renderTabs();
+  renderTabManage();
+  toast('✓ タブを追加しました');
+}
+
+function openTabEdit(tabId) {
+  editingTabId = tabId;
+  var t = state.tabs.find(function(x){return x.id===tabId;});
+  if (!t) return;
+  document.getElementById('tab-edit-name').value = t.name;
+  openModal('mo-tab-edit');
+}
+
+function saveTabName() {
+  var name = document.getElementById('tab-edit-name').value.trim();
+  if (!name) { toast('タブ名を入力してください'); return; }
+  var t = state.tabs.find(function(x){return x.id===editingTabId;});
+  if (!t) return;
+  t.name = name;
+  save();
+  closeModal('mo-tab-edit');
+  renderTabs();
+  renderTabManage();
+  renderList();
+  toast('✓ タブ名を変更しました');
+}
+
+function deleteTab(tabId) {
+  var t = state.tabs.find(function(x){return x.id===tabId;});
+  var cnt = state.items.filter(function(i){return i.tabId===tabId;}).length;
+  var msg = '「' + (t?t.name:'') + '」を削除しますか？';
+  if (cnt > 0) msg += '\n（このタブの ' + cnt + ' 件は「未分類」になります）';
+  if (!confirm(msg)) return;
+  // アイテムのtabIdをクリア
+  state.items.forEach(function(i){ if(i.tabId===tabId) i.tabId=''; });
+  state.tabs = state.tabs.filter(function(x){return x.id!==tabId;});
+  if (curTab === tabId) curTab = 'all';
+  save();
+  renderTabs();
+  renderTabManage();
+  renderList();
+  toast('タブを削除しました');
+}
+
+// ============================================================
+//  検索・ソート
+// ============================================================
+function onSearch() {
+  curKw = document.getElementById('search-inp').value.toLowerCase();
+  renderList();
+}
+
+function clearSearch() {
+  document.getElementById('search-inp').value = '';
+  curKw = '';
+  renderList();
+}
+
+function setSort(key, dir, btn) {
+  curSort = {key:key, dir:dir};
+  document.querySelectorAll('.sort-btn').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  renderList();
+}
+
+// ============================================================
+//  データ管理
+// ============================================================
+function openData() { openModal('mo-data'); }
+
+// ── JSON エクスポート ──
+function exportJSON() {
+  var data = { version:1, exported:new Date().toISOString(), tabs:state.tabs, items:state.items };
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  dlBlob(blob, 'copipe_' + today() + '.json');
+  toast('✓ JSONをダウンロードしました');
+}
+
+// ── CSV エクスポート ──
+function exportCSV() {
+  var rows = [['id','title','body','tabId','tabName','created','updated']];
+  state.items.forEach(function(item) {
+    rows.push([item.id, item.title||'', item.body||'', item.tabId||'', getTabName(item.tabId), item.created||'', item.updated||'']);
+  });
+  var csv = '\uFEFF' + rows.map(function(r){
+    return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(',');
+  }).join('\r\n');
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  dlBlob(blob, 'copipe_' + today() + '.csv');
+  toast('✓ CSVをダウンロードしました');
+}
+
+function dlBlob(blob, name) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
+
+function today() {
+  var d = new Date();
+  return d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
+}
+
+// ── インポート ──
+function impDrag(e, on) { e.preventDefault(); document.getElementById('imp-drop').classList.toggle('drag', on); }
+function impDrop(e) {
+  e.preventDefault();
+  document.getElementById('imp-drop').classList.remove('drag');
+  var file = e.dataTransfer.files[0];
+  if (file) readFile(file);
+}
+function impFile(input) {
+  var file = input.files[0];
+  if (file) readFile(file);
+  input.value = '';
+}
+
+function readFile(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var txt = e.target.result.replace(/^\uFEFF/, '');
+    if (file.name.endsWith('.json')) {
+      importJSON(txt);
+    } else {
+      importCSV(txt);
+    }
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+// ── JSON インポート ──
+function importJSON(txt) {
+  try {
+    var obj = JSON.parse(txt);
+    var inTabs  = Array.isArray(obj) ? [] : (obj.tabs  || []);
+    var inItems = Array.isArray(obj) ? obj : (obj.items || []);
+    doImport(inTabs, inItems);
+  } catch(e) {
+    toast('JSONの形式が正しくありません');
+    document.getElementById('imp-status').textContent = 'エラー: ' + e.message;
+  }
+}
+
+// ── CSV インポート ──
+function importCSV(txt) {
+  var lines = txt.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(function(l){return l.trim();});
+  if (lines.length < 2) { toast('データがありません'); return; }
+  var hdr = parseCsvLine(lines[0]);
+  var fi = {id:-1,title:-1,body:-1,tabId:-1,tabName:-1,created:-1,updated:-1};
+  hdr.forEach(function(h,i){
+    var k = h.toLowerCase().trim();
+    if(k==='id')fi.id=i;
+    else if(k==='title'||k==='タイトル')fi.title=i;
+    else if(k==='body'||k==='本文')fi.body=i;
+    else if(k==='tabid'||k==='タブid')fi.tabId=i;
+    else if(k==='tabname'||k==='タブ名'||k==='タブ')fi.tabName=i;
+    else if(k==='created'||k==='作成日')fi.created=i;
+    else if(k==='updated'||k==='更新日')fi.updated=i;
+  });
+  if (fi.title < 0) { toast('titleカラムが見つかりません'); return; }
+
+  var items = lines.slice(1).map(function(l){
+    var r = parseCsvLine(l);
+    return {
+      id:      fi.id>=0      ? r[fi.id]||''      : '',
+      title:   fi.title>=0   ? r[fi.title]||''   : '',
+      body:    fi.body>=0    ? r[fi.body]||''     : '',
+      tabId:   fi.tabId>=0   ? r[fi.tabId]||''   : '',
+      tabName: fi.tabName>=0 ? r[fi.tabName]||'' : '',
+      created: fi.created>=0 ? r[fi.created]||'' : '',
+      updated: fi.updated>=0 ? r[fi.updated]||'' : ''
+    };
+  }).filter(function(i){return i.title;});
+
+  doImport([], items);
+}
+
+function parseCsvLine(line) {
+  var res=[], cur='', inQ=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else{inQ=!inQ;}}
+    else if(c===','&&!inQ){res.push(cur);cur='';}
+    else{cur+=c;}
+  }
+  res.push(cur);
+  return res;
+}
+
+// ── インポート本体（重複処理） ──
+function doImport(inTabs, inItems) {
+  var now = nowStr();
+  var addedTabs=0, addedItems=0, updatedItems=0;
+
+  // タブのマージ（名前一致で統合、なければ追加）
+  inTabs.forEach(function(t) {
+    if (!t.name) return;
+    var existing = state.tabs.find(function(x){return x.name===t.name;});
+    if (!existing) {
+      var maxOrder = state.tabs.reduce(function(m,x){return Math.max(m,x.order||0);},0);
+      state.tabs.push({ id: t.id||uid(), name:t.name, order:maxOrder+1 });
+      addedTabs++;
+    }
+  });
+
+  // アイテムのマージ
+  inItems.forEach(function(incoming) {
+    if (!incoming.title) return;
+
+    // tabName から tabId を解決
+    var resolvedTabId = incoming.tabId || '';
+    if (!resolvedTabId && incoming.tabName) {
+      var found = state.tabs.find(function(t){return t.name===incoming.tabName;});
+      if (!found && incoming.tabName) {
+        // タブも新規作成
+        var newTab = { id:uid(), name:incoming.tabName, order:state.tabs.length+1 };
+        state.tabs.push(newTab);
+        found = newTab;
+        addedTabs++;
+      }
+      resolvedTabId = found ? found.id : '';
+    }
+
+    // 既存アイテムを探す（idまたはタイトルで照合）
+    var existIdx = -1;
+    if (incoming.id) {
+      existIdx = state.items.findIndex(function(x){return x.id===incoming.id;});
+    }
+    if (existIdx < 0) {
+      existIdx = state.items.findIndex(function(x){return x.title===incoming.title;});
+    }
+
+    if (existIdx >= 0) {
+      // 更新日が新しい方を優先
+      var existUpdated = state.items[existIdx].updated || state.items[existIdx].created || '';
+      var incomingUpdated = incoming.updated || incoming.created || '';
+      if (!existUpdated || incomingUpdated > existUpdated) {
+        state.items[existIdx].title   = incoming.title;
+        state.items[existIdx].body    = incoming.body || '';
+        state.items[existIdx].tabId   = resolvedTabId;
+        state.items[existIdx].updated = incoming.updated || now;
+        if (incoming.created) state.items[existIdx].created = incoming.created;
+        updatedItems++;
+      }
+    } else {
+      state.items.push({
+        id:      incoming.id || uid(),
+        title:   incoming.title,
+        body:    incoming.body || '',
+        tabId:   resolvedTabId,
+        created: incoming.created || now,
+        updated: incoming.updated || now
+      });
+      addedItems++;
+    }
+  });
+
+  save();
+  renderTabs();
+  renderList();
+
+  var msg = '✓ 完了：追加 ' + addedItems + '件　更新 ' + updatedItems + '件';
+  if (addedTabs) msg += '　タブ追加 ' + addedTabs + '件';
+  toast(msg);
+  document.getElementById('imp-status').textContent = msg;
+}
+
+// ── 全削除 ──
+function clearAll() {
+  if (!confirm('全データを削除します。この操作は元に戻せません。\n先にエクスポートしましたか？')) return;
+  if (!confirm('本当に削除してよいですか？')) return;
+  state.tabs  = [];
+  state.items = [];
+  curTab = 'all';
+  save();
+  renderTabs();
+  renderList();
+  toast('全データを削除しました');
+}
+
+// ============================================================
+//  起動
+// ============================================================
+function renderAppTitle() {
+  document.getElementById('hd-title').textContent = state.appTitle || 'コピペ管理ノート';
+  document.title = state.appTitle || 'コピペ管理ノート';
+}
+
+function editAppTitle() {
+  var current = state.appTitle || 'コピペ管理ノート';
+  var newTitle = prompt('タイトルを入力してください', current);
+  if (newTitle === null) return; // キャンセル
+  newTitle = newTitle.trim() || 'コピペ管理ノート';
+  state.appTitle = newTitle;
+  save();
+  renderAppTitle();
+  toast('✓ タイトルを変更しました');
+}
+
+load();
+renderAppTitle();
+renderTabs();
+renderList();
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>
