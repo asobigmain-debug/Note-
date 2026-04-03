@@ -2,539 +2,219 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#8b1a0e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#7a1a0e">
-<title>コピペ管理ノート</title>
+<meta name="apple-mobile-web-app-title" content="マイノート">
+<title>マイノート</title>
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --red:    #9b2212;
-  --red2:   #c0392b;
-  --red3:   #e74c3c;
-  --redbg:  #2a0a07;
-  --redbg2: #3d1008;
-  --redbg3: #521610;
-  --cream:  #fdf6ee;
-  --paper:  #faf0e4;
-  --border: #c8856a;
-  --border2:#e8b49a;
-  --text:   #1a0a06;
-  --text2:  #5a2e1e;
-  --gold:   #b8862a;
-  --sh:     rgba(90,20,10,0.18);
-  --copy:   #1a6b9a;
+  --cream: #f7f3eb; --cream-dark: #ede8dc; --cream-border: #d0c8b4;
+  --shu: #c0392b; --shu-light: #e05c4a; --shu-dark: #8b1a0e; --shu-pale: #fdf0ee;
+  --ink: #2a2a2a; --ink-light: #666; --red-accent: #8b3a3a; --gold: #a07820;
+  --shadow: rgba(80,40,30,0.12);
+  --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
-body{
-  font-family:"Zen Kaku Gothic New",sans-serif;
-  background:var(--redbg);
-  color:var(--cream);
-  display:flex;flex-direction:column;height:100dvh;
-}
+body{font-family:'Zen Kaku Gothic New',sans-serif;background:var(--cream);color:var(--ink);font-size:14px;display:flex;flex-direction:column;}
 
-/* ── ヘッダー ── */
-.hd{
-  background:var(--redbg);
-  border-bottom:1px solid var(--redbg3);
-  padding:12px 16px 10px;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;
-  position:relative;
-  z-index:50;
-}
-.hd-left{display:flex;align-items:center;gap:10px;}
-.hd-bar{width:3px;height:22px;background:var(--red2);border-radius:2px;flex-shrink:0;}
-.hd-title{
-  font-family:"Shippori Mincho",serif;
-  font-size:1rem;letter-spacing:0.25em;font-weight:600;
-  color:var(--cream);
-  cursor:pointer;border-bottom:1px dashed rgba(200,133,106,0.3);
-  transition:border-color 0.15s;
-}
-.hd-title:hover{border-bottom-color:rgba(200,133,106,0.7);}
-.hd-right{display:flex;gap:8px;}
-.hd-btn{
-  background:none;border:1px solid rgba(200,133,106,0.35);
-  border-radius:6px;padding:6px 10px;
-  color:var(--border2);font-size:0.72rem;cursor:pointer;
-  font-family:"Zen Kaku Gothic New",sans-serif;
-  transition:all 0.15s;white-space:nowrap;
-}
-.hd-btn:hover{background:var(--redbg3);border-color:var(--border);color:var(--cream);}
-.hd-btn.active{background:var(--red);border-color:var(--red2);color:white;}
+/* ヘッダー */
+.app-header{background:var(--shu-dark);padding:calc(10px + var(--safe-top)) 14px 8px;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 8px var(--shadow);flex-shrink:0;z-index:10;}
+.header-row1{display:flex;align-items:center;gap:10px;}
+.header-row2{display:flex;gap:6px;}
+.app-title{font-family:'Shippori Mincho',serif;font-size:20px;font-weight:800;color:var(--cream);letter-spacing:.12em;white-space:nowrap;cursor:pointer;border-bottom:1.5px dashed rgba(255,255,255,.35);padding-bottom:1px;flex-shrink:0;}
+.app-title-input{font-family:'Shippori Mincho',serif;font-size:20px;font-weight:800;color:var(--cream);letter-spacing:.12em;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.5);border-radius:4px;padding:2px 8px;outline:none;min-width:80px;}
+.search-input{flex:1;padding:7px 10px;border:1.5px solid rgba(255,255,255,.3);border-radius:4px;background:rgba(255,255,255,.12);font-family:'Zen Kaku Gothic New',sans-serif;font-size:13px;color:white;outline:none;}
+.search-input::placeholder{color:rgba(255,255,255,.5);}
+.btn-header{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.35);padding:6px 12px;border-radius:4px;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;}
+.btn-header:active{background:rgba(255,255,255,.28);}
 
-/* ── タブバー ── */
-.tabbar{
-  background:var(--redbg2);
-  border-bottom:1px solid var(--redbg3);
-  display:flex;align-items:stretch;
-  overflow-x:auto;scrollbar-width:none;
-  flex-shrink:0;min-height:42px;
-}
-.tabbar::-webkit-scrollbar{display:none;}
-.tab-item{
-  display:flex;align-items:center;gap:6px;
-  padding:0 16px;
-  color:rgba(253,246,238,0.45);
-  font-size:0.76rem;cursor:pointer;
-  border-bottom:2px solid transparent;
-  white-space:nowrap;transition:all 0.15s;
-  background:none;border-top:none;border-left:none;border-right:none;
-  font-family:"Zen Kaku Gothic New",sans-serif;
-  position:relative;flex-shrink:0;
-}
-.tab-item.on{color:var(--cream);border-bottom-color:var(--red2);}
-.tab-item:hover{color:rgba(253,246,238,0.8);}
-.tab-all{border-right:1px solid var(--redbg3);}
-.tab-add{
-  padding:0 14px;color:rgba(200,133,106,0.6);
-  font-size:1.1rem;cursor:pointer;background:none;border:none;
-  font-family:"Zen Kaku Gothic New",sans-serif;
-  transition:color 0.15s;flex-shrink:0;
-}
-.tab-add:hover{color:var(--red2);}
-.tab-cnt{
-  font-size:0.62rem;background:rgba(155,34,18,0.5);
-  padding:1px 5px;border-radius:8px;color:rgba(253,246,238,0.7);
-}
-.tab-item.on .tab-cnt{background:var(--red);color:white;}
+/* オンライン状態バー */
+.status-bar{text-align:center;font-size:11px;padding:3px;font-family:'Zen Kaku Gothic New',sans-serif;display:none;}
+.status-bar.offline{display:block;background:#c0392b;color:white;}
+.status-bar.syncing{display:block;background:#a07820;color:white;}
 
-/* ── 検索バー ── */
-.searchbar{
-  padding:10px 14px;background:var(--redbg2);
-  border-bottom:1px solid var(--redbg3);
-  flex-shrink:0;
-}
-.search-inner{
-  display:flex;gap:8px;align-items:center;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(200,133,106,0.25);
-  border-radius:8px;padding:7px 12px;
-}
-.search-icon{color:rgba(200,133,106,0.5);font-size:0.85rem;flex-shrink:0;}
-.search-inp{
-  flex:1;background:none;border:none;outline:none;
-  font-family:"Zen Kaku Gothic New",sans-serif;
-  font-size:0.84rem;color:var(--cream);
-}
-.search-inp::placeholder{color:rgba(200,133,106,0.4);}
-.search-clear{
-  background:none;border:none;color:rgba(200,133,106,0.5);
-  cursor:pointer;font-size:0.9rem;padding:0 2px;
-  transition:color 0.15s;flex-shrink:0;
-}
-.search-clear:hover{color:var(--red2);}
+/* タブバー */
+.tabs-bar{background:var(--cream-dark);border-bottom:2px solid var(--cream-border);display:flex;align-items:flex-end;overflow-x:scroll;-webkit-overflow-scrolling:touch;padding:0 12px;gap:2px;flex-shrink:0;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{padding:9px 16px 8px;border:1.5px solid transparent;border-bottom:none;border-radius:6px 6px 0 0;background:transparent;font-family:'Zen Kaku Gothic New',sans-serif;font-size:13px;color:var(--ink-light);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;margin-bottom:-2px;flex-shrink:0;user-select:none;-webkit-user-select:none;}
+.tab-btn.active{background:var(--cream);border-color:var(--cream-border);color:var(--shu-dark);font-weight:700;}
+.tab-edit-icon{font-size:10px;opacity:0;background:none;border:none;cursor:pointer;color:var(--ink-light);padding:1px 3px;border-radius:2px;}
+.tab-btn.active .tab-edit-icon{opacity:1;}
+.tab-add-btn{padding:8px 12px;background:transparent;border:none;color:var(--shu);font-size:18px;cursor:pointer;flex-shrink:0;border-radius:4px;margin-bottom:2px;}
 
-/* ── リスト ── */
-.list-wrap{flex:1;overflow-y:auto;padding:12px 14px 80px;}
-.list-wrap::-webkit-scrollbar{width:3px;}
-.list-wrap::-webkit-scrollbar-track{background:transparent;}
-.list-wrap::-webkit-scrollbar-thumb{background:var(--redbg3);border-radius:2px;}
+/* スクロールエリア */
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 14px;padding-bottom:calc(16px + var(--safe-bottom));}
 
-.item-card{
-  background:rgba(253,246,238,0.06);
-  border:1px solid rgba(200,133,106,0.2);
-  border-left:3px solid var(--red);
-  border-radius:8px;padding:14px;margin-bottom:9px;
-  cursor:pointer;transition:all 0.15s;
-  position:relative;
-}
-.item-card:hover{background:rgba(253,246,238,0.1);border-color:rgba(200,133,106,0.4);}
-.item-card:active{transform:scale(0.99);}
-.item-title{
-  font-family:"Shippori Mincho",serif;
-  font-size:0.95rem;font-weight:600;
-  color:var(--cream);margin-bottom:5px;
-  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
-}
-.item-body{
-  font-size:0.78rem;color:rgba(253,246,238,0.55);
-  line-height:1.7;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-}
-.item-foot{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-top:9px;gap:8px;
-}
-.item-meta{font-size:0.64rem;color:rgba(200,133,106,0.6);}
-.item-tab-badge{
-  font-size:0.6rem;padding:2px 7px;border-radius:8px;
-  background:rgba(155,34,18,0.35);color:rgba(253,246,238,0.6);
-  border:1px solid rgba(155,34,18,0.5);
-}
-.btn-copy-card{
-  padding:4px 10px;border-radius:5px;
-  border:1px solid rgba(26,107,154,0.5);
-  background:rgba(26,107,154,0.1);
-  color:rgba(100,180,230,0.9);
-  font-size:0.67rem;cursor:pointer;
-  font-family:"Zen Kaku Gothic New",sans-serif;
-  transition:all 0.15s;white-space:nowrap;flex-shrink:0;
-}
-.btn-copy-card:hover{background:rgba(26,107,154,0.3);color:white;}
+/* 追加フォーム */
+.add-form{background:white;border:1.5px solid var(--cream-border);border-radius:8px;padding:10px 12px;margin-bottom:10px;box-shadow:0 1px 4px var(--shadow);}
+.add-form-row{display:flex;gap:6px;margin-bottom:6px;}
+.form-input{flex:1;padding:8px 10px;border:1.5px solid var(--cream-border);border-radius:4px;font-family:'Zen Kaku Gothic New',sans-serif;font-size:13px;color:var(--ink);background:var(--cream);outline:none;}
+.form-input:focus{border-color:var(--shu-light);background:white;}
+.form-input-title{max-width:120px;flex-shrink:0;}
+.form-textarea{width:100%;padding:8px 10px;border:1.5px solid var(--cream-border);border-radius:4px;font-family:'Zen Kaku Gothic New',sans-serif;font-size:13px;color:var(--ink);background:var(--cream);outline:none;resize:none;overflow:hidden;min-height:36px;}
+.form-textarea:focus{border-color:var(--shu-light);background:white;}
+.btn-add{background:var(--shu);color:white;padding:8px 16px;border:none;border-radius:4px;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;font-size:13px;font-weight:500;white-space:nowrap;flex-shrink:0;}
+.btn-add:active{background:var(--shu-dark);}
+.btn-add:disabled{background:#ccc;cursor:not-allowed;}
 
-.empty{text-align:center;padding:50px 20px;color:rgba(200,133,106,0.5);}
-.empty-icon{font-size:2.5rem;margin-bottom:12px;}
-.empty-txt{font-size:0.82rem;line-height:2;}
+/* 列ヘッダー・行 */
+.list-header{display:grid;grid-template-columns:110px 1fr 72px 44px;gap:6px;padding:3px 10px;font-size:11px;color:var(--ink-light);font-weight:500;letter-spacing:.06em;margin-bottom:4px;}
+.item-row{display:grid;grid-template-columns:110px 1fr 72px 44px;gap:6px;align-items:start;background:white;border:1.5px solid var(--cream-border);border-radius:6px;padding:8px 10px;margin-bottom:6px;box-shadow:0 1px 3px var(--shadow);animation:fadeIn .18s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+.cell-title{font-family:'Shippori Mincho',serif;font-size:13px;font-weight:600;color:var(--shu-dark);word-break:break-all;line-height:1.4;display:flex;flex-direction:column;gap:3px;}
+.tab-badge{font-family:'Zen Kaku Gothic New',sans-serif;font-size:10px;background:var(--shu-pale);color:var(--shu-dark);border-radius:3px;padding:1px 5px;font-weight:400;display:inline-block;align-self:flex-start;}
+.cell-content{font-size:12px;color:var(--ink-light);word-break:break-all;line-height:1.45;min-width:0;}
+.cell-content-inner{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.cell-content-inner.expanded{display:block;}
+.expand-btn{font-size:10px;color:var(--shu);background:none;border:none;cursor:pointer;padding:0;font-family:'Zen Kaku Gothic New',sans-serif;}
+.cell-copy{display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:1px;}
+.copy-btn{padding:5px 0;background:var(--shu);color:white;border:none;border-radius:4px;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;font-size:11px;font-weight:500;width:64px;text-align:center;}
+.copy-btn:active{background:var(--shu-dark);}
+.copy-btn.copied{background:var(--gold);}
+.link-btn{padding:5px 0;background:white;color:var(--shu);border:1.5px solid var(--shu);border-radius:4px;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;font-size:11px;font-weight:500;width:64px;text-align:center;text-decoration:none;display:block;}
+.link-btn:active{background:var(--shu-pale);}
+.cell-actions{display:flex;flex-direction:column;gap:3px;align-items:center;padding-top:1px;}
+.icon-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:3px 4px;border-radius:3px;color:var(--ink-light);line-height:1;}
 
-/* ── FAB（新規追加） ── */
-.fab{
-  position:fixed;bottom:24px;right:20px;
-  width:52px;height:52px;border-radius:50%;
-  background:var(--red);border:none;
-  color:white;font-size:1.5rem;
-  cursor:pointer;z-index:80;
-  box-shadow:0 4px 20px rgba(155,34,18,0.6);
-  display:flex;align-items:center;justify-content:center;
-  transition:all 0.2s;
-}
-.fab:hover{background:var(--red2);transform:scale(1.08);}
-.fab:active{transform:scale(0.95);}
+/* 編集行 */
+.item-row.editing{display:block;background:var(--shu-pale);border-color:var(--shu-light);}
+.edit-form{display:flex;flex-direction:column;gap:6px;}
+.edit-input{width:100%;padding:7px 10px;border:1.5px solid var(--cream-border);border-radius:4px;font-family:'Zen Kaku Gothic New',sans-serif;font-size:13px;background:white;outline:none;resize:vertical;}
+.edit-input:focus{border-color:var(--shu-light);}
+.edit-input-title{font-family:'Shippori Mincho',serif;font-weight:600;color:var(--shu-dark);}
+.edit-input-content{min-height:70px;}
+.edit-actions{display:flex;gap:6px;justify-content:flex-end;}
+.btn-save{background:var(--shu);color:white;padding:6px 14px;border:none;border-radius:4px;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;font-size:12px;}
+.btn-cancel{background:transparent;color:var(--ink-light);border:1.5px solid var(--cream-border);padding:6px 12px;border-radius:4px;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;font-size:12px;}
 
-/* ── モーダル共通 ── */
-.overlay{
-  display:none;position:fixed;inset:0;
-  background:rgba(10,3,1,0.85);z-index:200;
-  overflow-y:auto;padding:16px;
-  align-items:flex-start;justify-content:center;
-}
-.overlay.on{display:flex;}
-.modal{
-  background:var(--redbg2);
-  border:1px solid var(--redbg3);
-  border-radius:12px;
-  padding:22px;max-width:640px;width:100%;
-  margin:auto;position:relative;
-}
-.modal-close{
-  position:absolute;top:14px;right:16px;
-  background:none;border:none;
-  color:rgba(200,133,106,0.6);font-size:1.1rem;
-  cursor:pointer;padding:4px 6px;transition:color 0.15s;
-}
-.modal-close:hover{color:var(--red2);}
-.modal-title{
-  font-family:"Shippori Mincho",serif;
-  font-size:1.15rem;color:var(--cream);
-  margin-bottom:18px;padding-right:30px;
-}
-.modal-title-sm{
-  font-family:"Shippori Mincho",serif;
-  font-size:0.95rem;color:var(--cream);
-  margin-bottom:14px;padding-bottom:10px;
-  border-bottom:1px solid var(--redbg3);
-  display:flex;align-items:center;gap:8px;
-}
-.modal-title-sm::before{
-  content:"";display:block;width:3px;height:14px;
-  background:var(--red2);border-radius:2px;
-}
+/* 空・ローディング */
+.empty-state{text-align:center;padding:48px 20px;color:var(--ink-light);}
+.empty-icon{font-size:30px;margin-bottom:10px;}
+.empty-text{font-family:'Shippori Mincho',serif;font-size:15px;margin-bottom:4px;}
+.empty-sub{font-size:12px;color:#aaa;}
+.loading{text-align:center;padding:32px;color:var(--ink-light);font-family:'Shippori Mincho',serif;}
 
-/* ── フォーム ── */
-.fg{display:grid;gap:14px;}
-.lbl{font-size:0.68rem;letter-spacing:0.18em;color:var(--gold);margin-bottom:5px;display:block;}
-.inp,.ta{
-  width:100%;border:1.5px solid rgba(200,133,106,0.3);
-  border-radius:7px;padding:9px 12px;
-  font-family:"Zen Kaku Gothic New",sans-serif;
-  font-size:0.88rem;color:var(--cream);
-  background:rgba(255,255,255,0.05);
-  transition:border-color 0.2s;
-}
-.inp:focus,.ta:focus{outline:none;border-color:var(--red2);}
-.inp::placeholder,.ta::placeholder{color:rgba(200,133,106,0.35);}
-.ta{resize:vertical;line-height:1.9;min-height:160px;}
-.wc{font-size:0.68rem;color:var(--gold);text-align:right;margin-top:4px;}
-.sel{
-  width:100%;border:1.5px solid rgba(200,133,106,0.3);
-  border-radius:7px;padding:9px 12px;
-  font-family:"Zen Kaku Gothic New",sans-serif;
-  font-size:0.88rem;color:var(--cream);
-  background:var(--redbg2);cursor:pointer;
-}
-.sel:focus{outline:none;border-color:var(--red2);}
-.sel option{background:var(--redbg2);}
+/* モーダル */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--cream);border:2px solid var(--cream-border);border-radius:10px;padding:22px 24px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+.modal-title{font-family:'Shippori Mincho',serif;font-size:16px;font-weight:700;color:var(--shu-dark);margin-bottom:12px;}
+.modal-note{font-size:11px;color:var(--ink-light);margin-bottom:10px;line-height:1.6;}
+.modal-input{width:100%;padding:9px 12px;border:1.5px solid var(--cream-border);border-radius:4px;font-family:'Zen Kaku Gothic New',sans-serif;font-size:14px;background:white;outline:none;margin-bottom:12px;}
+.modal-input:focus{border-color:var(--shu-light);}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;align-items:center;}
+.btn-ghost{background:transparent;color:var(--ink-light);border:1.5px solid var(--cream-border);padding:7px 14px;border-radius:4px;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;font-size:13px;}
+.btn-danger{background:transparent;color:var(--red-accent);border:1.5px solid var(--red-accent);padding:7px 12px;border-radius:4px;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;font-size:12px;margin-right:auto;}
+.btn-full{width:100%;padding:11px 0;margin-bottom:8px;border:none;border-radius:6px;cursor:pointer;font-family:'Zen Kaku Gothic New',sans-serif;font-size:14px;font-weight:500;background:var(--shu);color:white;}
+.btn-full:active{background:var(--shu-dark);}
+.btn-full.outline{background:white;color:var(--shu);border:1.5px solid var(--shu);}
 
-/* ── ボタン ── */
-.btn-row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px;}
-.btn{
-  padding:9px 20px;border-radius:7px;
-  font-family:"Zen Kaku Gothic New",sans-serif;
-  font-size:0.82rem;cursor:pointer;
-  transition:all 0.15s;border:none;font-weight:500;
-}
-.btn-p{background:var(--red);color:white;}
-.btn-p:hover{background:var(--red2);}
-.btn-p:disabled{opacity:0.5;}
-.btn-s{background:transparent;color:var(--border2);border:1.5px solid rgba(200,133,106,0.35);}
-.btn-s:hover{border-color:var(--red2);color:var(--cream);}
-.btn-danger{background:transparent;color:#e74c3c;border:1.5px solid rgba(231,76,60,0.4);}
-.btn-danger:hover{background:rgba(231,76,60,0.15);}
-.btn-sm{padding:6px 13px;font-size:0.74rem;}
+/* GAS URL設定 */
+.url-note{font-size:11px;color:var(--ink-light);margin-bottom:6px;line-height:1.5;}
 
-/* ── 詳細モーダル ── */
-.detail-title{
-  font-family:"Shippori Mincho",serif;
-  font-size:1.3rem;color:var(--cream);
-  margin-bottom:14px;line-height:1.5;
-}
-.detail-body{
-  font-size:0.88rem;line-height:1.95;
-  color:rgba(253,246,238,0.8);
-  white-space:pre-wrap;
-  background:rgba(255,255,255,0.04);
-  border-radius:7px;padding:14px;
-  border:1px solid rgba(200,133,106,0.15);
-  margin-bottom:14px;
-  max-height:45vh;overflow-y:auto;
-}
-.detail-meta{font-size:0.66rem;color:rgba(200,133,106,0.5);margin-bottom:14px;}
-
-/* ── タブ管理モーダル ── */
-.tab-manage-list{margin-bottom:14px;}
-.tab-manage-item{
-  display:flex;align-items:center;gap:8px;
-  padding:10px 12px;
-  border-bottom:1px solid rgba(200,133,106,0.12);
-}
-.tab-manage-name{flex:1;font-size:0.86rem;color:var(--cream);}
-.tab-manage-cnt{font-size:0.7rem;color:rgba(200,133,106,0.5);}
-.tab-edit-btn,.tab-del-btn{
-  background:none;border:none;cursor:pointer;
-  padding:4px 6px;border-radius:4px;font-size:0.78rem;
-  transition:all 0.15s;
-}
-.tab-edit-btn{color:rgba(200,133,106,0.6);}
-.tab-edit-btn:hover{color:var(--cream);background:rgba(255,255,255,0.08);}
-.tab-del-btn{color:rgba(231,76,60,0.5);}
-.tab-del-btn:hover{color:#e74c3c;background:rgba(231,76,60,0.1);}
-
-/* ── データ管理モーダル ── */
-.data-section{margin-bottom:16px;}
-.data-box{
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(200,133,106,0.18);
-  border-radius:8px;padding:14px;margin-bottom:10px;
-}
-.data-box-title{
-  font-family:"Shippori Mincho",serif;
-  font-size:0.88rem;color:var(--cream);margin-bottom:6px;
-}
-.data-box-desc{font-size:0.75rem;color:rgba(200,133,106,0.65);line-height:1.8;margin-bottom:10px;}
-.imp-drop{
-  border:2px dashed rgba(200,133,106,0.3);
-  border-radius:8px;padding:18px;text-align:center;
-  cursor:pointer;transition:all 0.2s;
-}
-.imp-drop:hover,.imp-drop.drag{border-color:var(--red2);background:rgba(155,34,18,0.08);}
-.imp-drop-txt{font-size:0.8rem;color:rgba(200,133,106,0.55);line-height:2;}
-#imp-file{display:none;}
-.imp-status{font-size:0.76rem;color:#5dbb6f;margin-top:8px;min-height:1.4em;}
-
-/* ── トースト ── */
-.toast{
-  position:fixed;bottom:90px;left:50%;
-  transform:translateX(-50%) translateY(60px);
-  background:var(--redbg3);color:var(--cream);
-  padding:10px 20px;border-radius:20px;
-  font-size:0.8rem;z-index:999;
-  transition:transform 0.28s;
-  border-left:3px solid var(--red2);
-  white-space:nowrap;pointer-events:none;
-  box-shadow:0 4px 20px rgba(0,0,0,0.4);
-}
-.toast.on{transform:translateX(-50%) translateY(0);}
-
-/* ── ソート ── */
-.sort-row{
-  display:flex;gap:5px;padding:8px 14px;
-  background:var(--redbg2);border-bottom:1px solid var(--redbg3);
-  overflow-x:auto;scrollbar-width:none;flex-shrink:0;
-}
-.sort-row::-webkit-scrollbar{display:none;}
-.sort-btn{
-  padding:4px 10px;border-radius:4px;
-  font-family:"Zen Kaku Gothic New",sans-serif;
-  font-size:0.68rem;cursor:pointer;
-  border:1px solid rgba(200,133,106,0.25);
-  background:rgba(255,255,255,0.04);
-  color:rgba(200,133,106,0.7);
-  transition:all 0.15s;white-space:nowrap;flex-shrink:0;
-}
-.sort-btn:hover{border-color:var(--red2);color:var(--cream);}
-.sort-btn.on{background:var(--red);border-color:var(--red);color:white;}
-
-/* ── カウント ── */
-.count-bar{
-  padding:6px 14px;
-  font-size:0.68rem;color:rgba(200,133,106,0.5);
-  background:var(--redbg2);border-bottom:1px solid var(--redbg3);
-  flex-shrink:0;
-}
+/* トースト */
+.toast{position:fixed;bottom:calc(20px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(10px);background:var(--shu-dark);color:white;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:all .22s;z-index:300;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
-<!-- ヘッダー -->
-<div class="hd">
-  <div class="hd-left">
-    <div class="hd-bar"></div>
-    <div class="hd-title" id="hd-title" onclick="editAppTitle()" title="タップして編集"></div>
+<header class="app-header">
+  <div class="header-row1">
+    <span class="app-title" id="appTitle" onclick="startEditTitle()">マイノート</span>
+    <input class="search-input" id="searchInput" type="text" placeholder="検索…" oninput="onSearch()">
   </div>
-  <div class="hd-right">
-    <button class="hd-btn" onclick="openTabManage()">⚙ タブ管理</button>
-    <button class="hd-btn" onclick="openData()">💾 データ管理</button>
+  <div class="header-row2">
+    <button class="btn-header" onclick="openModal('exportModal')">📄 書き出し</button>
+    <button class="btn-header" onclick="openModal('importModal')">📥 読み込み</button>
+    <button class="btn-header" onclick="openModal('settingsModal')" style="margin-left:auto;">⚙️</button>
   </div>
+</header>
+
+<div class="status-bar" id="statusBar"></div>
+<div class="tabs-bar" id="tabsBar"></div>
+
+<div class="scroll-area">
+  <div class="add-form" id="addForm">
+    <div class="add-form-row">
+      <input class="form-input form-input-title" id="newTitle" type="text" placeholder="タイトル">
+      <button class="btn-add" id="addBtn" onclick="addItem()">追加</button>
+    </div>
+    <textarea class="form-textarea" id="newContent" placeholder="内容（URL・テキストなど）" rows="1" oninput="autoResize(this)"></textarea>
+  </div>
+  <div class="list-header" id="listHeader" style="display:none;">
+    <div>タイトル</div><div>内容</div><div style="text-align:center;">コピー</div><div></div>
+  </div>
+  <div id="itemsList"><div class="loading">読み込み中…</div></div>
 </div>
 
-<!-- タブバー -->
-<div class="tabbar" id="tabbar"></div>
-
-<!-- 検索バー -->
-<div class="searchbar">
-  <div class="search-inner">
-    <span class="search-icon">🔍</span>
-    <input class="search-inp" id="search-inp" type="text" placeholder="検索…" oninput="onSearch()">
-    <button class="search-clear" onclick="clearSearch()">✕</button>
-  </div>
-</div>
-
-<!-- ソートバー -->
-<div class="sort-row" id="sort-row">
-  <button class="sort-btn on" onclick="setSort('updated','desc',this)">更新↓</button>
-  <button class="sort-btn" onclick="setSort('updated','asc',this)">更新↑</button>
-  <button class="sort-btn" onclick="setSort('created','desc',this)">作成↓</button>
-  <button class="sort-btn" onclick="setSort('created','asc',this)">作成↑</button>
-  <button class="sort-btn" onclick="setSort('title','asc',this)">タイトル↑</button>
-  <button class="sort-btn" onclick="setSort('title','desc',this)">タイトル↓</button>
-</div>
-
-<!-- カウント -->
-<div class="count-bar" id="count-bar"></div>
-
-<!-- リスト -->
-<div class="list-wrap" id="list-wrap"></div>
-
-<!-- FAB -->
-<button class="fab" onclick="openEdit(null)" title="新規追加">＋</button>
-
-<!-- ── モーダル：詳細 ── -->
-<div class="overlay" id="mo-detail">
+<!-- タブ追加 -->
+<div class="modal-overlay" id="addTabModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('mo-detail')">✕</button>
-    <div class="modal-title" id="detail-title"></div>
-    <div class="detail-meta" id="detail-meta"></div>
-    <div class="detail-body" id="detail-body"></div>
-    <div class="btn-row">
-      <button class="btn btn-s btn-sm" onclick="cpDetail()">📋 全文コピー</button>
-      <button class="btn btn-s btn-sm" onclick="editFromDetail()">✏ 編集</button>
-      <button class="btn btn-p btn-sm" onclick="closeModal('mo-detail')">閉じる</button>
+    <div class="modal-title">タブを追加</div>
+    <input class="modal-input" id="newTabName" type="text" placeholder="タブ名" onkeydown="if(event.key==='Enter')confirmAddTab()">
+    <div class="modal-btns">
+      <button class="btn-ghost" onclick="closeModal('addTabModal')">キャンセル</button>
+      <button class="btn-add" style="padding:7px 18px;" onclick="confirmAddTab()">追加</button>
     </div>
   </div>
 </div>
 
-<!-- ── モーダル：編集 ── -->
-<div class="overlay" id="mo-edit">
+<!-- タブ編集 -->
+<div class="modal-overlay" id="editTabModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('mo-edit')">✕</button>
-    <div class="modal-title-sm" id="edit-modal-title">新規アイテム</div>
-    <div class="fg">
-      <div>
-        <label class="lbl">タイトル</label>
-        <input class="inp" id="e-title" type="text" placeholder="タイトルを入力">
-      </div>
-      <div>
-        <label class="lbl">タブ</label>
-        <select class="sel" id="e-tab"></select>
-      </div>
-      <div>
-        <label class="lbl">本文</label>
-        <textarea class="ta" id="e-body" placeholder="本文を入力" oninput="updateWc()"></textarea>
-        <div class="wc" id="wc"></div>
-      </div>
-    </div>
-    <div class="btn-row" style="margin-top:14px;">
-      <button class="btn btn-danger btn-sm" id="del-btn" style="display:none;margin-right:auto;" onclick="deleteItem()">削除</button>
-      <button class="btn btn-s btn-sm" onclick="closeModal('mo-edit')">キャンセル</button>
-      <button class="btn btn-p btn-sm" id="save-btn" onclick="saveItem()">💾 保存</button>
+    <div class="modal-title">タブを編集</div>
+    <input class="modal-input" id="editTabInput" type="text" onkeydown="if(event.key==='Enter')confirmRenameTab()">
+    <div class="modal-btns">
+      <button class="btn-danger" onclick="confirmDeleteTab()">削除</button>
+      <button class="btn-ghost" onclick="closeModal('editTabModal')">キャンセル</button>
+      <button class="btn-add" style="padding:7px 18px;" onclick="confirmRenameTab()">変更</button>
     </div>
   </div>
 </div>
 
-<!-- ── モーダル：タブ管理 ── -->
-<div class="overlay" id="mo-tab">
+<!-- エクスポート -->
+<div class="modal-overlay" id="exportModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('mo-tab')">✕</button>
-    <div class="modal-title-sm">タブ管理</div>
-    <div class="tab-manage-list" id="tab-manage-list"></div>
-    <div class="fg" style="margin-bottom:12px;">
-      <div>
-        <label class="lbl">新しいタブを追加</label>
-        <div style="display:flex;gap:8px;">
-          <input class="inp" id="new-tab-name" type="text" placeholder="タブ名" style="flex:1;">
-          <button class="btn btn-p btn-sm" onclick="addTab()">追加</button>
-        </div>
-      </div>
+    <div class="modal-title">データを書き出す</div>
+    <p class="modal-note">全タブのデータをファイルに保存します</p>
+    <button class="btn-full" onclick="doExportJson()">📄 JSON形式で書き出す</button>
+    <button class="btn-full outline" onclick="doExportCsv()">📊 CSV形式で書き出す</button>
+    <div class="modal-btns" style="margin-top:4px;">
+      <button class="btn-ghost" onclick="closeModal('exportModal')">閉じる</button>
     </div>
   </div>
 </div>
 
-<!-- ── モーダル：タブ名編集 ── -->
-<div class="overlay" id="mo-tab-edit">
-  <div class="modal" style="max-width:380px;">
-    <button class="modal-close" onclick="closeModal('mo-tab-edit')">✕</button>
-    <div class="modal-title-sm">タブ名を変更</div>
-    <div class="fg">
-      <div>
-        <label class="lbl">タブ名</label>
-        <input class="inp" id="tab-edit-name" type="text">
-      </div>
-    </div>
-    <div class="btn-row" style="margin-top:12px;">
-      <button class="btn btn-s btn-sm" onclick="closeModal('mo-tab-edit')">キャンセル</button>
-      <button class="btn btn-p btn-sm" onclick="saveTabName()">保存</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── モーダル：データ管理 ── -->
-<div class="overlay" id="mo-data">
+<!-- インポート -->
+<div class="modal-overlay" id="importModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal('mo-data')">✕</button>
-    <div class="modal-title-sm">データ管理</div>
-
-    <div class="data-box">
-      <div class="data-box-title">📥 エクスポート</div>
-      <div class="data-box-desc">全データをファイルとしてダウンロードします。</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-p btn-sm" onclick="exportJSON()">📦 JSON</button>
-        <button class="btn btn-s btn-sm" onclick="exportCSV()">📋 CSV</button>
-      </div>
+    <div class="modal-title">データを読み込む</div>
+    <p class="modal-note">・タイトル＋内容が同じ → スキップ<br>・タイトルが同じで内容が違う → 上書き<br>・新しいデータ → 追加</p>
+    <input type="file" id="importFile" accept=".json,.csv" style="width:100%;font-size:13px;margin-bottom:14px;">
+    <div class="modal-btns">
+      <button class="btn-ghost" onclick="closeModal('importModal')">キャンセル</button>
+      <button class="btn-add" style="padding:7px 18px;" onclick="doImport()">読み込む</button>
     </div>
+  </div>
+</div>
 
-    <div class="data-box">
-      <div class="data-box-title">📤 インポート</div>
-      <div class="data-box-desc">
-        CSV または JSON を読み込みます。<br>
-        ・同じタイトルのアイテムは<strong style="color:var(--cream);">更新日が新しい方</strong>を優先します。<br>
-        ・新しいアイテムは追加されます。<br>
-        ・既存データは消えません。
-      </div>
-      <div class="imp-drop" id="imp-drop" onclick="document.getElementById('imp-file').click()" ondragover="impDrag(event,true)" ondragleave="impDrag(event,false)" ondrop="impDrop(event)">
-        <div class="imp-drop-txt">📁 クリックまたはドラッグ＆ドロップ<br><small style="opacity:0.7;">CSV (.csv) / JSON (.json)</small></div>
-      </div>
-      <input type="file" id="imp-file" accept=".csv,.json" onchange="impFile(this)">
-      <div class="imp-status" id="imp-status"></div>
-    </div>
-
-    <div class="data-box">
-      <div class="data-box-title">🗑 データ初期化</div>
-      <div class="data-box-desc">全データを削除します。実行前に必ずエクスポートしてください。</div>
-      <button class="btn btn-danger btn-sm" onclick="clearAll()">全データを削除</button>
+<!-- 設定（GAS URL） -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-title">⚙️ 設定</div>
+    <p class="url-note">GAS WebアプリのURLを設定してください。<br>設定するとデータがGASスプレッドシートに保存されます。</p>
+    <input class="modal-input" id="gasUrlInput" type="url" placeholder="https://script.google.com/macros/s/...">
+    <p class="url-note" style="margin-top:-8px;color:#c0392b;" id="urlStatus"></p>
+    <div class="modal-btns">
+      <button class="btn-ghost" onclick="closeModal('settingsModal')">キャンセル</button>
+      <button class="btn-add" style="padding:7px 18px;" onclick="saveGasUrl()">保存して同期</button>
     </div>
   </div>
 </div>
@@ -542,602 +222,569 @@ body{
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-//  State
-// ============================================================
-var STORE_KEY = 'copipe_v1';
-var state = {
-  appTitle: 'コピペ管理ノート',
-  tabs: [],   // [{id, name, order}]
-  items: []   // [{id, title, body, tabId, created, updated}]
-};
-var curTab = 'all';
-var curSort = {key:'updated', dir:'desc'};
-var curKw = '';
-var editingId = null;
-var editingTabId = null; // タブ名編集用
+// ===== 設定 =====
+const KEY_TITLE   = 'copipe_title';
+const KEY_GASURL  = 'copipe_gasurl';
+const KEY_CACHE   = 'copipe_cache';   // GASデータのローカルキャッシュ
+const KEY_QUEUE   = 'copipe_queue';   // オフライン時の操作キュー
+const KEY_TABS_LS = 'copipe_tabs_ls'; // GASなし時のタブ
+const KEY_ITEMS_LS= 'copipe_items_ls';// GASなし時のアイテム
+const KEY_NEXTID  = 'copipe_nextid';
 
-// ============================================================
-//  Storage
-// ============================================================
-function load() {
-  try {
-    var raw = localStorage.getItem(STORE_KEY);
-    if (raw) {
-      var d = JSON.parse(raw);
-      state.appTitle = d.appTitle || 'コピペ管理ノート';
-      state.tabs  = d.tabs  || [];
-      state.items = d.items || [];
-    }
-  } catch(e) {}
-}
+// ===== 状態 =====
+let gasUrl = '';
+let tabs = [], currentTab = '', allItems = [];
+let isSearching = false, searchResults = [];
+let renamingTab = '';
+let isSyncing = false;
 
-function save() {
-  localStorage.setItem(STORE_KEY, JSON.stringify(state));
-}
+// ===== 初期化 =====
+window.addEventListener('load', async () => {
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
-// ============================================================
-//  Util
-// ============================================================
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+  gasUrl = localStorage.getItem(KEY_GASURL) || '';
+  const title = localStorage.getItem(KEY_TITLE) || 'マイノート';
+  document.getElementById('appTitle').textContent = title;
+  document.title = title;
+  document.getElementById('gasUrlInput').value = gasUrl;
 
-function nowStr() {
-  var d = new Date();
-  return d.getFullYear() + '-'
-    + pad(d.getMonth()+1) + '-' + pad(d.getDate())
-    + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
-}
-function pad(n){ return n < 10 ? '0'+n : String(n); }
+  // オンライン状態監視
+  window.addEventListener('online',  () => { updateStatusBar(); syncQueue(); });
+  window.addEventListener('offline', () => updateStatusBar());
+  updateStatusBar();
 
-function toast(m) {
-  var t = document.getElementById('toast');
-  t.textContent = m;
-  t.classList.add('on');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(function(){ t.classList.remove('on'); }, 2400);
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('on');
-}
-
-function openModal(id) {
-  document.getElementById(id).classList.add('on');
-}
-
-// overlay click で閉じる
-document.querySelectorAll('.overlay').forEach(function(el) {
-  el.addEventListener('click', function(e) {
-    if (e.target === el) el.classList.remove('on');
-  });
+  await loadData();
 });
 
-// ============================================================
-//  タブ
-// ============================================================
-function renderTabs() {
-  var bar = document.getElementById('tabbar');
-  var allCnt = state.items.length;
-  var allBtn = '<button class="tab-item tab-all' + (curTab==='all'?' on':'') + '" onclick="setCurTab(\'all\')">すべて<span class="tab-cnt">' + allCnt + '</span></button>';
-  var tabs = state.tabs.slice().sort(function(a,b){return (a.order||0)-(b.order||0);}).map(function(t){
-    var cnt = state.items.filter(function(i){return i.tabId===t.id;}).length;
-    return '<button class="tab-item' + (curTab===t.id?' on':'') + '" onclick="setCurTab(\'' + t.id + '\')">'
-      + esc(t.name) + '<span class="tab-cnt">' + cnt + '</span></button>';
-  }).join('');
-  var addBtn = '<button class="tab-add" onclick="openTabManage()" title="タブ管理">＋</button>';
-  bar.innerHTML = allBtn + tabs + addBtn;
+// ===== オンライン状態バー =====
+function updateStatusBar() {
+  const bar = document.getElementById('statusBar');
+  if (!navigator.onLine) {
+    bar.textContent = '📵 オフライン中 - データはローカルに保存されます';
+    bar.className = 'status-bar offline';
+  } else if (isSyncing) {
+    bar.textContent = '🔄 同期中…';
+    bar.className = 'status-bar syncing';
+  } else {
+    bar.className = 'status-bar';
+  }
 }
 
-function setCurTab(id) {
-  curTab = id;
-  renderTabs();
-  renderList();
-}
-
-// ============================================================
-//  リスト
-// ============================================================
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function getTabName(tabId) {
-  var t = state.tabs.find(function(x){return x.id===tabId;});
-  return t ? t.name : '';
-}
-
-function filteredItems() {
-  return state.items.filter(function(item) {
-    var tabOk = curTab === 'all' || item.tabId === curTab;
-    var kwOk  = !curKw || (item.title+' '+item.body).toLowerCase().indexOf(curKw) >= 0;
-    return tabOk && kwOk;
+// ===== GAS API呼び出し =====
+async function callGas(action, params = {}) {
+  if (!gasUrl) throw new Error('GAS URLが未設定です');
+  const body = JSON.stringify({ action, ...params });
+  const res = await fetch(gasUrl, {
+    method: 'POST',
+    body,
+    headers: { 'Content-Type': 'text/plain' } // CORSのためtext/plain
   });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message || 'エラーが発生しました');
+  return data;
 }
 
-function renderList() {
-  var items = filteredItems().slice().sort(function(a,b){
-    var va = a[curSort.key] || '', vb = b[curSort.key] || '';
-    return curSort.dir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
-  });
-
-  var total = state.items.length;
-  var shown = items.length;
-  var bar = document.getElementById('count-bar');
-  bar.textContent = (curKw || curTab !== 'all')
-    ? '絞り込み ' + shown + ' / ' + total + ' 件'
-    : '全 ' + total + ' 件';
-
-  var wrap = document.getElementById('list-wrap');
-  if (!items.length) {
-    wrap.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-txt">'
-      + (curKw ? '「'+esc(curKw)+'」は見つかりませんでした' : 'アイテムがありません<br>＋ボタンで追加してください') + '</div></div>';
-    return;
+// ===== データ読み込み =====
+async function loadData() {
+  if (gasUrl && navigator.onLine) {
+    // GASから取得
+    try {
+      showStatus('syncing');
+      const result = await callGas('getAll');
+      tabs = result.tabs || [];
+      // allItemsをフラット化
+      allItems = [];
+      Object.entries(result.items || {}).forEach(([tab, items]) => {
+        items.forEach(item => allItems.push({ ...item, tab }));
+      });
+      // キャッシュに保存
+      localStorage.setItem(KEY_CACHE, JSON.stringify({ tabs, allItems }));
+      showStatus('');
+    } catch(e) {
+      showStatus('');
+      showToast('GAS読み込みエラー。キャッシュを使用します');
+      loadFromCache();
+    }
+  } else if (gasUrl) {
+    // オフラインでGAS設定あり→キャッシュ使用
+    loadFromCache();
+  } else {
+    // GAS未設定→localStorage完結モード
+    loadFromLocal();
   }
 
-  wrap.innerHTML = items.map(function(item) {
-    var tabName = getTabName(item.tabId);
-    var bodyPrev = (item.body||'').slice(0,80) + ((item.body||'').length>80?'…':'');
-    return '<div class="item-card" onclick="openDetail(\'' + item.id + '\')">'
-      + '<div class="item-title">' + esc(item.title) + '</div>'
-      + (bodyPrev ? '<div class="item-body">' + esc(bodyPrev) + '</div>' : '')
-      + '<div class="item-foot">'
-      + '<div style="display:flex;gap:6px;align-items:center;">'
-      + (tabName && curTab==='all' ? '<span class="item-tab-badge">' + esc(tabName) + '</span>' : '')
-      + '<span class="item-meta">' + (item.updated||item.created||'') + '</span>'
-      + '</div>'
-      + '<button class="btn-copy-card" onclick="event.stopPropagation();cpItem(\'' + item.id + '\')">📋 コピー</button>'
-      + '</div></div>';
-  }).join('');
+  if (!tabs.length) {
+    tabs = ['YouTube', 'クラウド', 'GAS・アプリ', 'メール文面', 'その他'];
+    if (!gasUrl) saveLocal();
+  }
+  currentTab = tabs[0];
+  renderTabs();
+  renderCurrent();
 }
 
-// ============================================================
-//  詳細
-// ============================================================
-var detailId = null;
-function openDetail(id) {
-  var item = state.items.find(function(x){return x.id===id;});
-  if (!item) return;
-  detailId = id;
-  document.getElementById('detail-title').textContent = item.title || '';
-  document.getElementById('detail-meta').textContent =
-    (getTabName(item.tabId) ? '【'+getTabName(item.tabId)+'】　' : '') +
-    '更新：' + (item.updated||item.created||'');
-  document.getElementById('detail-body').textContent = item.body || '（本文なし）';
-  openModal('mo-detail');
+function loadFromCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(KEY_CACHE) || '{}');
+    tabs = cached.tabs || [];
+    allItems = cached.allItems || [];
+  } catch(e) { tabs = []; allItems = []; }
 }
 
-function cpDetail() {
-  var item = state.items.find(function(x){return x.id===detailId;});
-  if (!item) return;
-  var txt = item.title + (item.body ? '\n\n' + item.body : '');
-  navigator.clipboard.writeText(txt)
-    .then(function(){ toast('✓ コピーしました'); })
-    .catch(function(){ toast('コピーできませんでした'); });
+function loadFromLocal() {
+  try { tabs = JSON.parse(localStorage.getItem(KEY_TABS_LS) || '[]'); } catch(e) { tabs = []; }
+  try { allItems = JSON.parse(localStorage.getItem(KEY_ITEMS_LS) || '[]'); } catch(e) { allItems = []; }
 }
 
-function editFromDetail() {
-  closeModal('mo-detail');
-  openEdit(detailId);
+function saveLocal() {
+  localStorage.setItem(KEY_TABS_LS, JSON.stringify(tabs));
+  localStorage.setItem(KEY_ITEMS_LS, JSON.stringify(allItems));
 }
 
-function cpItem(id) {
-  var item = state.items.find(function(x){return x.id===id;});
-  if (!item) return;
-  var txt = item.title + (item.body ? '\n\n' + item.body : '');
-  navigator.clipboard.writeText(txt)
-    .then(function(){ toast('✓ コピーしました：' + item.title); })
-    .catch(function(){ toast('コピーできませんでした'); });
+function showStatus(type) {
+  isSyncing = (type === 'syncing');
+  updateStatusBar();
 }
 
-// ============================================================
-//  編集
-// ============================================================
-function openEdit(id) {
-  editingId = id;
-  var item = id ? state.items.find(function(x){return x.id===id;}) : null;
-
-  document.getElementById('edit-modal-title').textContent = item ? 'アイテムを編集' : '新規アイテム';
-  document.getElementById('e-title').value = item ? (item.title||'') : '';
-  document.getElementById('e-body').value  = item ? (item.body||'')  : '';
-  document.getElementById('del-btn').style.display = item ? '' : 'none';
-
-  // タブ選択肢
-  var sel = document.getElementById('e-tab');
-  sel.innerHTML = '<option value="">（未分類）</option>'
-    + state.tabs.map(function(t){
-        return '<option value="' + t.id + '"' + (item && item.tabId===t.id?' selected':'') + '>' + esc(t.name) + '</option>';
-      }).join('');
-
-  updateWc();
-  openModal('mo-edit');
-  setTimeout(function(){ document.getElementById('e-title').focus(); }, 100);
+// ===== オフラインキュー =====
+function enqueue(op) {
+  const q = JSON.parse(localStorage.getItem(KEY_QUEUE) || '[]');
+  q.push(op);
+  localStorage.setItem(KEY_QUEUE, JSON.stringify(q));
 }
 
-function updateWc() {
-  var v = document.getElementById('e-body').value;
-  document.getElementById('wc').textContent = v.length.toLocaleString() + '字';
+async function syncQueue() {
+  if (!gasUrl || !navigator.onLine) return;
+  const q = JSON.parse(localStorage.getItem(KEY_QUEUE) || '[]');
+  if (!q.length) { await loadData(); return; }
+  showStatus('syncing');
+  for (const op of q) {
+    try { await callGas(op.action, op.params); } catch(e) { /* 失敗は無視して次へ */ }
+  }
+  localStorage.removeItem(KEY_QUEUE);
+  showStatus('');
+  await loadData();
+  showToast('同期完了しました');
 }
 
-function saveItem() {
-  var title = document.getElementById('e-title').value.trim();
-  if (!title) { toast('タイトルを入力してください'); return; }
-  var body  = document.getElementById('e-body').value;
-  var tabId = document.getElementById('e-tab').value;
-  var now   = nowStr();
+// ===== タイトル編集 =====
+function startEditTitle() {
+  const cur = localStorage.getItem(KEY_TITLE) || 'マイノート';
+  const inp = document.createElement('input');
+  inp.className = 'app-title-input'; inp.value = cur;
+  document.getElementById('appTitle').replaceWith(inp);
+  inp.focus(); inp.select();
+  const done = () => {
+    const v = inp.value.trim() || cur;
+    localStorage.setItem(KEY_TITLE, v); document.title = v;
+    const sp = document.createElement('span');
+    sp.className = 'app-title'; sp.id = 'appTitle';
+    sp.textContent = v; sp.onclick = startEditTitle;
+    inp.replaceWith(sp);
+  };
+  inp.addEventListener('blur', done);
+  inp.addEventListener('keydown', e => { if(e.key==='Enter'){e.preventDefault();inp.blur();} if(e.key==='Escape'){inp.value=cur;inp.blur();} });
+}
 
-  if (editingId) {
-    var idx = state.items.findIndex(function(x){return x.id===editingId;});
-    if (idx >= 0) {
-      state.items[idx].title   = title;
-      state.items[idx].body    = body;
-      state.items[idx].tabId   = tabId;
-      state.items[idx].updated = now;
+// ===== タブ =====
+function renderTabs() {
+  const bar = document.getElementById('tabsBar');
+  bar.innerHTML = '';
+  tabs.forEach(name => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (name === currentTab ? ' active' : '');
+    const lbl = document.createElement('span'); lbl.textContent = name;
+    const ico = document.createElement('button');
+    ico.className = 'tab-edit-icon'; ico.textContent = '✎';
+    ico.addEventListener('click', e => { e.stopPropagation(); openEditTab(name); });
+    btn.appendChild(lbl); btn.appendChild(ico);
+    btn.addEventListener('click', () => { currentTab = name; renderTabs(); renderCurrent(); });
+    bar.appendChild(btn);
+  });
+  const add = document.createElement('button');
+  add.className = 'tab-add-btn'; add.textContent = '＋';
+  add.onclick = () => { document.getElementById('newTabName').value = ''; openModal('addTabModal'); setTimeout(()=>document.getElementById('newTabName').focus(),80); };
+  bar.appendChild(add);
+}
+
+async function confirmAddTab() {
+  const name = document.getElementById('newTabName').value.trim();
+  if (!name) return;
+  if (tabs.includes(name)) { showToast('同じ名前のタブがあります'); return; }
+  if (gasUrl && navigator.onLine) {
+    try { await callGas('addTab', { tab: name }); } catch(e) { showToast('エラー: ' + e.message); return; }
+  } else {
+    enqueue({ action: 'addTab', params: { tab: name } });
+  }
+  tabs.push(name);
+  if (!gasUrl) saveLocal();
+  else localStorage.setItem(KEY_CACHE, JSON.stringify({ tabs, allItems }));
+  closeModal('addTabModal');
+  currentTab = name; renderTabs(); renderCurrent();
+  showToast(`「${name}」を追加しました`);
+}
+
+function openEditTab(name) {
+  renamingTab = name;
+  document.getElementById('editTabInput').value = name;
+  openModal('editTabModal');
+  setTimeout(()=>document.getElementById('editTabInput').focus(),80);
+}
+
+async function confirmRenameTab() {
+  const n = document.getElementById('editTabInput').value.trim();
+  if (!n || n === renamingTab) { closeModal('editTabModal'); return; }
+  if (tabs.includes(n)) { showToast('同じ名前のタブがあります'); return; }
+  if (gasUrl && navigator.onLine) {
+    try { await callGas('renameTab', { oldTab: renamingTab, newTab: n }); } catch(e) { showToast('エラー: ' + e.message); return; }
+  } else {
+    enqueue({ action: 'renameTab', params: { oldTab: renamingTab, newTab: n } });
+  }
+  const idx = tabs.indexOf(renamingTab);
+  if (idx >= 0) tabs[idx] = n;
+  allItems.forEach(i => { if (i.tab === renamingTab) i.tab = n; });
+  if (!gasUrl) saveLocal();
+  else localStorage.setItem(KEY_CACHE, JSON.stringify({ tabs, allItems }));
+  if (currentTab === renamingTab) currentTab = n;
+  closeModal('editTabModal'); renderTabs(); renderCurrent();
+  showToast(`「${n}」に変更しました`);
+}
+
+async function confirmDeleteTab() {
+  if (tabs.length <= 1) { showToast('最後のタブは削除できません'); return; }
+  if (!confirm(`「${renamingTab}」タブを削除しますか？\n中のデータもすべて削除されます`)) return;
+  if (gasUrl && navigator.onLine) {
+    try { await callGas('deleteTab', { tab: renamingTab }); } catch(e) { showToast('エラー: ' + e.message); return; }
+  } else {
+    enqueue({ action: 'deleteTab', params: { tab: renamingTab } });
+  }
+  allItems = allItems.filter(i => i.tab !== renamingTab);
+  tabs = tabs.filter(t => t !== renamingTab);
+  if (!gasUrl) saveLocal();
+  else localStorage.setItem(KEY_CACHE, JSON.stringify({ tabs, allItems }));
+  if (currentTab === renamingTab) currentTab = tabs[0];
+  closeModal('editTabModal'); renderTabs(); renderCurrent();
+  showToast('タブを削除しました');
+}
+
+// ===== アイテム表示 =====
+function renderCurrent() {
+  if (isSearching) return;
+  renderItems(allItems.filter(i => i.tab === currentTab), false);
+}
+function renderItems(list, showTab) {
+  const hdr = document.getElementById('listHeader');
+  const con = document.getElementById('itemsList');
+  hdr.style.display = list.length ? '' : 'none';
+  if (!list.length) {
+    con.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">${isSearching?'検索結果がありません':'まだ項目がありません'}</div><div class="empty-sub">${isSearching?'キーワードを変えてみてください':'上のフォームから追加できます'}</div></div>`;
+    return;
+  }
+  con.innerHTML = '';
+  list.forEach(item => con.appendChild(createRow(item, showTab)));
+}
+
+function createRow(item, showTab) {
+  const row = document.createElement('div');
+  row.className = 'item-row'; row.id = `row-${item.id}`;
+  const isLong = item.content && item.content.length > 100;
+  const hasContent = !!(item.content && item.content.trim());
+
+  const ct = document.createElement('div'); ct.className = 'cell-title';
+  const ts = document.createElement('span'); ts.textContent = item.title || '（タイトルなし）';
+  ct.appendChild(ts);
+  if (showTab) { const b = document.createElement('span'); b.className = 'tab-badge'; b.textContent = item.tab; ct.appendChild(b); }
+
+  const cc = document.createElement('div'); cc.className = 'cell-content';
+  const inner = document.createElement('div');
+  inner.className = 'cell-content-inner' + (isLong ? '' : ' expanded');
+  inner.textContent = item.content || '';
+  cc.appendChild(inner);
+  if (isLong) {
+    const eb = document.createElement('button'); eb.className = 'expand-btn'; eb.textContent = '▼ もっと見る';
+    eb.onclick = () => { const x = inner.classList.toggle('expanded'); eb.textContent = x ? '▲ 折りたたむ' : '▼ もっと見る'; };
+    cc.appendChild(eb);
+  }
+
+  const cp = document.createElement('div'); cp.className = 'cell-copy';
+  if (hasContent) {
+    const cb = document.createElement('button'); cb.className = 'copy-btn'; cb.id = `cp-${item.id}`;
+    cb.textContent = 'コピー';
+    cb.onclick = () => doCopy(item.id, item.content);
+    cp.appendChild(cb);
+    if (isUrl(item.content)) {
+      const lb = document.createElement('a'); lb.className = 'link-btn';
+      lb.href = item.content.trim(); lb.target = '_blank'; lb.rel = 'noopener noreferrer';
+      lb.textContent = '開く'; cp.appendChild(lb);
+    }
+  }
+
+  const ca = document.createElement('div'); ca.className = 'cell-actions';
+  const eb2 = document.createElement('button'); eb2.className = 'icon-btn'; eb2.textContent = '✎'; eb2.onclick = () => startEdit(item);
+  const db = document.createElement('button'); db.className = 'icon-btn'; db.textContent = '🗑'; db.onclick = () => deleteItem(item.id);
+  ca.appendChild(eb2); ca.appendChild(db);
+
+  row.appendChild(ct); row.appendChild(cc); row.appendChild(cp); row.appendChild(ca);
+  return row;
+}
+
+// ===== CRUD =====
+function nextId() {
+  const n = parseInt(localStorage.getItem(KEY_NEXTID) || '1');
+  localStorage.setItem(KEY_NEXTID, n + 1);
+  return n;
+}
+
+async function addItem() {
+  const title = document.getElementById('newTitle').value.trim();
+  const content = document.getElementById('newContent').value.trim();
+  if (!title && !content) { showToast('タイトルか内容を入力してください'); return; }
+  const btn = document.getElementById('addBtn');
+  btn.disabled = true;
+  let newId;
+  if (gasUrl && navigator.onLine) {
+    try {
+      const res = await callGas('addItem', { tab: currentTab, title, content });
+      newId = res.id;
+    } catch(e) {
+      showToast('エラー: ' + e.message); btn.disabled = false; return;
     }
   } else {
-    state.items.push({ id:uid(), title:title, body:body, tabId:tabId, created:now, updated:now });
+    newId = nextId();
+    enqueue({ action: 'addItem', params: { tab: currentTab, title, content } });
   }
-
-  save();
-  closeModal('mo-edit');
-  renderTabs();
-  renderList();
-  toast('✓ 保存しました');
+  allItems.push({ id: newId, tab: currentTab, title, content });
+  if (!gasUrl) saveLocal();
+  else localStorage.setItem(KEY_CACHE, JSON.stringify({ tabs, allItems }));
+  document.getElementById('newTitle').value = '';
+  const nc = document.getElementById('newContent'); nc.value = ''; nc.style.height = 'auto';
+  btn.disabled = false;
+  renderCurrent(); showToast('追加しました');
 }
 
-function deleteItem() {
-  if (!editingId) return;
-  if (!confirm('このアイテムを削除しますか？')) return;
-  state.items = state.items.filter(function(x){return x.id!==editingId;});
-  save();
-  closeModal('mo-edit');
-  renderTabs();
-  renderList();
-  toast('削除しました');
+function startEdit(item) {
+  const row = document.getElementById(`row-${item.id}`);
+  row.className = 'item-row editing';
+  row.innerHTML = `<div class="edit-form">
+    <input class="edit-input edit-input-title" id="et-${item.id}" value="${escH(item.title||'')}" placeholder="タイトル">
+    <textarea class="edit-input edit-input-content" id="ec-${item.id}" placeholder="内容">${escH(item.content||'')}</textarea>
+    <div class="edit-actions">
+      <button class="btn-cancel" onclick="cancelEdit()">キャンセル</button>
+      <button class="btn-save" onclick="saveEdit(${item.id},'${escH(item.tab)}')">保存</button>
+    </div>
+  </div>`;
 }
 
-// ============================================================
-//  タブ管理
-// ============================================================
-function openTabManage() {
-  renderTabManage();
-  openModal('mo-tab');
-}
-
-function renderTabManage() {
-  var list = document.getElementById('tab-manage-list');
-  if (!state.tabs.length) {
-    list.innerHTML = '<div style="font-size:0.78rem;color:rgba(200,133,106,0.5);padding:10px 0;">タブがありません</div>';
-    return;
+async function saveEdit(id, tab) {
+  const title = document.getElementById(`et-${id}`).value.trim();
+  const content = document.getElementById(`ec-${id}`).value;
+  const idx = allItems.findIndex(i => i.id === id);
+  const rowId = allItems[idx] ? allItems[idx].id : id;
+  if (gasUrl && navigator.onLine) {
+    try { await callGas('updateItem', { tab, rowId, title, content }); }
+    catch(e) { showToast('エラー: ' + e.message); return; }
+  } else {
+    enqueue({ action: 'updateItem', params: { tab, rowId, title, content } });
   }
-  list.innerHTML = state.tabs.slice().sort(function(a,b){return (a.order||0)-(b.order||0);}).map(function(t) {
-    var cnt = state.items.filter(function(i){return i.tabId===t.id;}).length;
-    return '<div class="tab-manage-item">'
-      + '<span class="tab-manage-name">' + esc(t.name) + '</span>'
-      + '<span class="tab-manage-cnt">' + cnt + '件</span>'
-      + '<button class="tab-edit-btn" onclick="openTabEdit(\'' + t.id + '\')">✏</button>'
-      + '<button class="tab-del-btn" onclick="deleteTab(\'' + t.id + '\')">🗑</button>'
-      + '</div>';
-  }).join('');
+  if (idx >= 0) { allItems[idx].title = title; allItems[idx].content = content; }
+  if (!gasUrl) saveLocal();
+  else localStorage.setItem(KEY_CACHE, JSON.stringify({ tabs, allItems }));
+  if (isSearching) { const si = searchResults.findIndex(i => i.id === id); if(si>=0){searchResults[si].title=title;searchResults[si].content=content;} renderItems(searchResults, true); }
+  else renderCurrent();
+  showToast('保存しました');
 }
 
-function addTab() {
-  var name = document.getElementById('new-tab-name').value.trim();
-  if (!name) { toast('タブ名を入力してください'); return; }
-  if (state.tabs.find(function(t){return t.name===name;})) { toast('同じ名前のタブがあります'); return; }
-  var maxOrder = state.tabs.reduce(function(m,t){return Math.max(m,t.order||0);}, 0);
-  state.tabs.push({ id:uid(), name:name, order:maxOrder+1 });
-  document.getElementById('new-tab-name').value = '';
-  save();
-  renderTabs();
-  renderTabManage();
-  toast('✓ タブを追加しました');
+function cancelEdit() { if (isSearching) renderItems(searchResults, true); else renderCurrent(); }
+
+async function deleteItem(id) {
+  if (!confirm('この項目を削除しますか？')) return;
+  const item = allItems.find(i => i.id === id);
+  if (!item) return;
+  if (gasUrl && navigator.onLine) {
+    try { await callGas('deleteItem', { tab: item.tab, rowId: id }); }
+    catch(e) { showToast('エラー: ' + e.message); return; }
+  } else {
+    enqueue({ action: 'deleteItem', params: { tab: item.tab, rowId: id } });
+  }
+  allItems = allItems.filter(i => i.id !== id);
+  if (!gasUrl) saveLocal();
+  else localStorage.setItem(KEY_CACHE, JSON.stringify({ tabs, allItems }));
+  if (isSearching) { searchResults = searchResults.filter(i => i.id !== id); renderItems(searchResults, true); }
+  else renderCurrent();
+  showToast('削除しました');
 }
 
-function openTabEdit(tabId) {
-  editingTabId = tabId;
-  var t = state.tabs.find(function(x){return x.id===tabId;});
-  if (!t) return;
-  document.getElementById('tab-edit-name').value = t.name;
-  openModal('mo-tab-edit');
-}
-
-function saveTabName() {
-  var name = document.getElementById('tab-edit-name').value.trim();
-  if (!name) { toast('タブ名を入力してください'); return; }
-  var t = state.tabs.find(function(x){return x.id===editingTabId;});
-  if (!t) return;
-  t.name = name;
-  save();
-  closeModal('mo-tab-edit');
-  renderTabs();
-  renderTabManage();
-  renderList();
-  toast('✓ タブ名を変更しました');
-}
-
-function deleteTab(tabId) {
-  var t = state.tabs.find(function(x){return x.id===tabId;});
-  var cnt = state.items.filter(function(i){return i.tabId===tabId;}).length;
-  var msg = '「' + (t?t.name:'') + '」を削除しますか？';
-  if (cnt > 0) msg += '\n（このタブの ' + cnt + ' 件は「未分類」になります）';
-  if (!confirm(msg)) return;
-  // アイテムのtabIdをクリア
-  state.items.forEach(function(i){ if(i.tabId===tabId) i.tabId=''; });
-  state.tabs = state.tabs.filter(function(x){return x.id!==tabId;});
-  if (curTab === tabId) curTab = 'all';
-  save();
-  renderTabs();
-  renderTabManage();
-  renderList();
-  toast('タブを削除しました');
-}
-
-// ============================================================
-//  検索・ソート
-// ============================================================
-function onSearch() {
-  curKw = document.getElementById('search-inp').value.toLowerCase();
-  renderList();
-}
-
-function clearSearch() {
-  document.getElementById('search-inp').value = '';
-  curKw = '';
-  renderList();
-}
-
-function setSort(key, dir, btn) {
-  curSort = {key:key, dir:dir};
-  document.querySelectorAll('.sort-btn').forEach(function(b){b.classList.remove('on');});
-  btn.classList.add('on');
-  renderList();
-}
-
-// ============================================================
-//  データ管理
-// ============================================================
-function openData() { openModal('mo-data'); }
-
-// ── JSON エクスポート ──
-function exportJSON() {
-  var data = { version:1, exported:new Date().toISOString(), tabs:state.tabs, items:state.items };
-  var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  dlBlob(blob, 'copipe_' + today() + '.json');
-  toast('✓ JSONをダウンロードしました');
-}
-
-// ── CSV エクスポート ──
-function exportCSV() {
-  var rows = [['id','title','body','tabId','tabName','created','updated']];
-  state.items.forEach(function(item) {
-    rows.push([item.id, item.title||'', item.body||'', item.tabId||'', getTabName(item.tabId), item.created||'', item.updated||'']);
-  });
-  var csv = '\uFEFF' + rows.map(function(r){
-    return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(',');
-  }).join('\r\n');
-  var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
-  dlBlob(blob, 'copipe_' + today() + '.csv');
-  toast('✓ CSVをダウンロードしました');
-}
-
-function dlBlob(blob, name) {
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = name;
-  a.click();
-  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
-}
-
-function today() {
-  var d = new Date();
-  return d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
-}
-
-// ── インポート ──
-function impDrag(e, on) { e.preventDefault(); document.getElementById('imp-drop').classList.toggle('drag', on); }
-function impDrop(e) {
-  e.preventDefault();
-  document.getElementById('imp-drop').classList.remove('drag');
-  var file = e.dataTransfer.files[0];
-  if (file) readFile(file);
-}
-function impFile(input) {
-  var file = input.files[0];
-  if (file) readFile(file);
-  input.value = '';
-}
-
-function readFile(file) {
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var txt = e.target.result.replace(/^\uFEFF/, '');
-    if (file.name.endsWith('.json')) {
-      importJSON(txt);
-    } else {
-      importCSV(txt);
-    }
+// ===== コピー =====
+function doCopy(id, content) {
+  const btn = document.getElementById(`cp-${id}`);
+  const done = () => {
+    if (btn) { btn.textContent = '済 ✓'; btn.classList.add('copied'); }
+    setTimeout(() => { if (btn) { btn.textContent = 'コピー'; btn.classList.remove('copied'); } }, 1800);
+    showToast('コピーしました');
   };
-  reader.readAsText(file, 'UTF-8');
+  navigator.clipboard.writeText(content||'').then(done).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = content||''; ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done();
+  });
 }
 
-// ── JSON インポート ──
-function importJSON(txt) {
+// ===== 検索 =====
+let searchTimer;
+function onSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (!q) { isSearching = false; document.getElementById('addForm').style.display = ''; renderCurrent(); return; }
+    isSearching = true; document.getElementById('addForm').style.display = 'none';
+    searchResults = allItems.filter(i => (i.title+' '+i.content).toLowerCase().includes(q));
+    renderItems(searchResults, true);
+  }, 300);
+}
+
+// ===== GAS URL設定 =====
+async function saveGasUrl() {
+  const url = document.getElementById('gasUrlInput').value.trim();
+  const status = document.getElementById('urlStatus');
+  if (!url) { localStorage.removeItem(KEY_GASURL); gasUrl = ''; closeModal('settingsModal'); showToast('GAS連携を解除しました'); return; }
+  status.textContent = '接続確認中…'; status.style.color = '#a07820';
   try {
-    var obj = JSON.parse(txt);
-    var inTabs  = Array.isArray(obj) ? [] : (obj.tabs  || []);
-    var inItems = Array.isArray(obj) ? obj : (obj.items || []);
-    doImport(inTabs, inItems);
-  } catch(e) {
-    toast('JSONの形式が正しくありません');
-    document.getElementById('imp-status').textContent = 'エラー: ' + e.message;
-  }
-}
-
-// ── CSV インポート ──
-function importCSV(txt) {
-  var lines = txt.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(function(l){return l.trim();});
-  if (lines.length < 2) { toast('データがありません'); return; }
-  var hdr = parseCsvLine(lines[0]);
-  var fi = {id:-1,title:-1,body:-1,tabId:-1,tabName:-1,created:-1,updated:-1};
-  hdr.forEach(function(h,i){
-    var k = h.toLowerCase().trim();
-    if(k==='id')fi.id=i;
-    else if(k==='title'||k==='タイトル')fi.title=i;
-    else if(k==='body'||k==='本文')fi.body=i;
-    else if(k==='tabid'||k==='タブid')fi.tabId=i;
-    else if(k==='tabname'||k==='タブ名'||k==='タブ')fi.tabName=i;
-    else if(k==='created'||k==='作成日')fi.created=i;
-    else if(k==='updated'||k==='更新日')fi.updated=i;
-  });
-  if (fi.title < 0) { toast('titleカラムが見つかりません'); return; }
-
-  var items = lines.slice(1).map(function(l){
-    var r = parseCsvLine(l);
-    return {
-      id:      fi.id>=0      ? r[fi.id]||''      : '',
-      title:   fi.title>=0   ? r[fi.title]||''   : '',
-      body:    fi.body>=0    ? r[fi.body]||''     : '',
-      tabId:   fi.tabId>=0   ? r[fi.tabId]||''   : '',
-      tabName: fi.tabName>=0 ? r[fi.tabName]||'' : '',
-      created: fi.created>=0 ? r[fi.created]||'' : '',
-      updated: fi.updated>=0 ? r[fi.updated]||'' : ''
-    };
-  }).filter(function(i){return i.title;});
-
-  doImport([], items);
-}
-
-function parseCsvLine(line) {
-  var res=[], cur='', inQ=false;
-  for(var i=0;i<line.length;i++){
-    var c=line[i];
-    if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else{inQ=!inQ;}}
-    else if(c===','&&!inQ){res.push(cur);cur='';}
-    else{cur+=c;}
-  }
-  res.push(cur);
-  return res;
-}
-
-// ── インポート本体（重複処理） ──
-function doImport(inTabs, inItems) {
-  var now = nowStr();
-  var addedTabs=0, addedItems=0, updatedItems=0;
-
-  // タブのマージ（名前一致で統合、なければ追加）
-  inTabs.forEach(function(t) {
-    if (!t.name) return;
-    var existing = state.tabs.find(function(x){return x.name===t.name;});
-    if (!existing) {
-      var maxOrder = state.tabs.reduce(function(m,x){return Math.max(m,x.order||0);},0);
-      state.tabs.push({ id: t.id||uid(), name:t.name, order:maxOrder+1 });
-      addedTabs++;
-    }
-  });
-
-  // アイテムのマージ
-  inItems.forEach(function(incoming) {
-    if (!incoming.title) return;
-
-    // tabName から tabId を解決
-    var resolvedTabId = incoming.tabId || '';
-    if (!resolvedTabId && incoming.tabName) {
-      var found = state.tabs.find(function(t){return t.name===incoming.tabName;});
-      if (!found && incoming.tabName) {
-        // タブも新規作成
-        var newTab = { id:uid(), name:incoming.tabName, order:state.tabs.length+1 };
-        state.tabs.push(newTab);
-        found = newTab;
-        addedTabs++;
-      }
-      resolvedTabId = found ? found.id : '';
-    }
-
-    // 既存アイテムを探す（idまたはタイトルで照合）
-    var existIdx = -1;
-    if (incoming.id) {
-      existIdx = state.items.findIndex(function(x){return x.id===incoming.id;});
-    }
-    if (existIdx < 0) {
-      existIdx = state.items.findIndex(function(x){return x.title===incoming.title;});
-    }
-
-    if (existIdx >= 0) {
-      // 更新日が新しい方を優先
-      var existUpdated = state.items[existIdx].updated || state.items[existIdx].created || '';
-      var incomingUpdated = incoming.updated || incoming.created || '';
-      if (!existUpdated || incomingUpdated > existUpdated) {
-        state.items[existIdx].title   = incoming.title;
-        state.items[existIdx].body    = incoming.body || '';
-        state.items[existIdx].tabId   = resolvedTabId;
-        state.items[existIdx].updated = incoming.updated || now;
-        if (incoming.created) state.items[existIdx].created = incoming.created;
-        updatedItems++;
-      }
+    const res = await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'getAll' }), headers: { 'Content-Type': 'text/plain' } });
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem(KEY_GASURL, url);
+      gasUrl = url;
+      status.textContent = '✅ 接続成功！';
+      status.style.color = '#27ae60';
+      setTimeout(async () => {
+        closeModal('settingsModal');
+        await loadData();
+        showToast('GAS連携設定完了・データを同期しました');
+      }, 800);
     } else {
-      state.items.push({
-        id:      incoming.id || uid(),
-        title:   incoming.title,
-        body:    incoming.body || '',
-        tabId:   resolvedTabId,
-        created: incoming.created || now,
-        updated: incoming.updated || now
-      });
-      addedItems++;
+      status.textContent = '❌ エラー: ' + data.message;
+      status.style.color = '#c0392b';
     }
-  });
-
-  save();
-  renderTabs();
-  renderList();
-
-  var msg = '✓ 完了：追加 ' + addedItems + '件　更新 ' + updatedItems + '件';
-  if (addedTabs) msg += '　タブ追加 ' + addedTabs + '件';
-  toast(msg);
-  document.getElementById('imp-status').textContent = msg;
+  } catch(e) {
+    status.textContent = '❌ 接続失敗。URLを確認してください';
+    status.style.color = '#c0392b';
+  }
 }
 
-// ── 全削除 ──
-function clearAll() {
-  if (!confirm('全データを削除します。この操作は元に戻せません。\n先にエクスポートしましたか？')) return;
-  if (!confirm('本当に削除してよいですか？')) return;
-  state.tabs  = [];
-  state.items = [];
-  curTab = 'all';
-  save();
-  renderTabs();
-  renderList();
-  toast('全データを削除しました');
+// ===== エクスポート =====
+function doExportJson() {
+  const result = {};
+  tabs.forEach(t => { result[t] = allItems.filter(i => i.tab === t).map(i => ({ title: i.title, content: i.content })); });
+  downloadFile(JSON.stringify(result, null, 2), 'copipe_data.json', 'application/json');
+  closeModal('exportModal'); showToast('JSONで書き出しました');
+}
+function doExportCsv() {
+  const rows = [['タブ','タイトル','内容']];
+  allItems.forEach(i => rows.push([i.tab, i.title, i.content]));
+  const csv = rows.map(r => r.map(c => '"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\n');
+  downloadFile('\uFEFF'+csv, 'copipe_data.csv', 'text/csv');
+  closeModal('exportModal'); showToast('CSVで書き出しました');
+}
+function downloadFile(content, filename, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type }));
+  a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
-// ============================================================
-//  起動
-// ============================================================
-function renderAppTitle() {
-  document.getElementById('hd-title').textContent = state.appTitle || 'コピペ管理ノート';
-  document.title = state.appTitle || 'コピペ管理ノート';
+// ===== インポート =====
+async function doImport() {
+  const file = document.getElementById('importFile').files[0];
+  if (!file) { showToast('ファイルを選んでください'); return; }
+  const text = await file.text();
+  const ext = file.name.split('.').pop().toLowerCase();
+  let importData = {};
+
+  try {
+    if (ext === 'json') {
+      importData = JSON.parse(text);
+    } else if (ext === 'csv') {
+      const lines = text.replace(/^\uFEFF/,'').split('\n').filter(l=>l.trim());
+      const start = (lines[0]||'').includes('タブ') ? 1 : 0;
+      lines.slice(start).forEach(line => {
+        const cols = parseCsv(line);
+        if (cols.length >= 3 && cols[0].trim()) {
+          if (!importData[cols[0]]) importData[cols[0]] = [];
+          importData[cols[0]].push({ title: cols[1], content: cols[2] });
+        }
+      });
+    } else { showToast('JSONまたはCSVを選んでください'); return; }
+  } catch(e) { showToast('読み込みエラー: ' + e.message); return; }
+
+  let added = 0, updated = 0, skipped = 0;
+
+  if (gasUrl && navigator.onLine) {
+    try {
+      const res = await callGas('importJson', { data: importData });
+      added = res.added; updated = res.updated; skipped = res.skipped;
+      await loadData();
+    } catch(e) { showToast('エラー: ' + e.message); return; }
+  } else {
+    // ローカルupsert
+    Object.entries(importData).forEach(([tab, items]) => {
+      if (!tabs.includes(tab)) tabs.push(tab);
+      (items||[]).forEach(item => {
+        const title = item.title||'', content = item.content||'';
+        const exact = allItems.find(i => i.tab===tab && i.title===title && i.content===content);
+        if (exact) { skipped++; return; }
+        const same = allItems.find(i => i.tab===tab && i.title===title);
+        if (same) { same.content = content; updated++; return; }
+        allItems.push({ id: nextId(), tab, title, content }); added++;
+      });
+    });
+    saveLocal();
+    if (gasUrl) enqueue({ action: 'importJson', params: { data: importData } });
+    renderTabs(); renderCurrent();
+  }
+
+  closeModal('importModal');
+  document.getElementById('importFile').value = '';
+  const msg = [`追加 ${added}件`];
+  if (updated) msg.push(`更新 ${updated}件`);
+  if (skipped) msg.push(`重複スキップ ${skipped}件`);
+  showToast(msg.join(' ／ '));
 }
 
-function editAppTitle() {
-  var current = state.appTitle || 'コピペ管理ノート';
-  var newTitle = prompt('タイトルを入力してください', current);
-  if (newTitle === null) return; // キャンセル
-  newTitle = newTitle.trim() || 'コピペ管理ノート';
-  state.appTitle = newTitle;
-  save();
-  renderAppTitle();
-  toast('✓ タイトルを変更しました');
+function parseCsv(line) {
+  const r=[]; let cur='', inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+    else if(c===','&&!inQ){r.push(cur);cur='';}
+    else cur+=c;
+  }
+  r.push(cur); return r;
 }
 
-load();
-renderAppTitle();
-renderTabs();
-renderList();
-
-// Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(function(){});
+// ===== モーダル =====
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  if (id === 'settingsModal') {
+    document.getElementById('gasUrlInput').value = gasUrl;
+    document.getElementById('urlStatus').textContent = gasUrl ? '✅ GAS連携中' : '';
+    document.getElementById('urlStatus').style.color = gasUrl ? '#27ae60' : '';
+  }
 }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if(e.target===el) closeModal(el.id); });
+});
+
+// ===== トースト =====
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ===== ユーティリティ =====
+function autoResize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+function escH(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function isUrl(s) { return /^https?:\/\/.+/i.test((s||'').trim()); }
 </script>
 </body>
 </html>
